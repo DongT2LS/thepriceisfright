@@ -21,9 +21,10 @@ void *receive_messages(void *arg)
     int socket = *((int *)arg);
     char buffer[BUFFER_SIZE];
     int bytes_received;
-    struct Response *response = (struct Response *)malloc(sizeof(struct Response));
+   
     while (1)
     {
+        struct Response *response = (struct Response *)malloc(sizeof(struct Response));
         bytes_received = recv(socket, response, BUFFER_SIZE, 0);
         if (bytes_received <= 0)
         {
@@ -31,11 +32,12 @@ void *receive_messages(void *arg)
             close(socket);
             exit(EXIT_SUCCESS);
         }
-        printf("Received from server: %s\n", response->message);
+        cout << "Received from server: " << response->message << endl;
         if(response->type == RESPONSE_LOGIN)
         {
             socket_id = atoi(response->message);
         }
+        free(response);
     }
 }
 
@@ -90,6 +92,7 @@ int main(int argc, char *argv[])
         __fpurge(stdin);
         struct Request request;
         request.client_id = socket_id;
+        cout << "Client_id : " << request.client_id << endl;
         switch (choice)
         {
         case 1:
@@ -123,9 +126,8 @@ int main(int argc, char *argv[])
             request.client_socket = 0;
             request.type = CHAT;
             cout << "Nhap tin nhan : ";
-            fgets(request.message,100,stdin);
+            fgets(request.message,500,stdin);
             request.message[strlen(request.message)-1] = '\0';
-            cout << request.message << endl;
             send(client_socket, &request, sizeof(struct Request), 0);
             cout << "CHAT ..." << endl;
             break;
@@ -153,6 +155,7 @@ int main(int argc, char *argv[])
         case 8:
             request.client_socket = 0;
             request.type = JOIN;
+            cout << "Nhap id : " ;
             cin >> request.message;
             send(client_socket, &request, sizeof(struct Request), 0);
             break;

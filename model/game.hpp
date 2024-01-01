@@ -31,7 +31,7 @@ public:
     Game(int _id,int _owner_id)
         : id(_id), owner_id(_owner_id) , status(GAME_READY)
     {
-        members.push_back(owner_id);
+        members.push_back(_owner_id);
     }
 
     // Getter for id
@@ -67,18 +67,13 @@ public:
     // Setter for members
     void addMembers(int member_id)
     {
-        for(int i=0;i<20;i++)
+        for(int member : members)
         {
-            if(members[i] == member_id)
-            {
-                cout << "User is in this room " << endl;
-                break;
-            }
-            if(members[i] == 0){
-                members[i] = member_id;
-                break;
+            if(member == member_id) {
+                cout << "User in this room" << endl;
             }
         }
+        members.push_back(member_id);
     }
 
     // Getter for questions

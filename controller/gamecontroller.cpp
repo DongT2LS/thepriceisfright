@@ -17,11 +17,13 @@ struct Response join(struct Request *request)
     if (game == nullptr)
     {
         response.status = ERROR;
+        cout << "Not found !" << endl;
         strcpy(response.message, "Not found !");
         return response;
     }
     if (user == nullptr || user->status == USER_OFFLINE)
     {
+        cout << "User offline !" <<endl;
         response.status = ERROR;
         strcpy(response.message, "User offline !");
         return response;
@@ -29,14 +31,17 @@ struct Response join(struct Request *request)
     switch (game->status)
     {
     case GAME_END:
+        cout << "Game end" << endl;
         response.status = ERROR;
         strcpy(response.message, "Game end !");
         return response;
     case GAME_INPROGRESS:
+        cout << "Game started" << endl;
         response.status = ERROR;
         strcpy(response.message, "Game started !");
         return response;
     case GAME_READY:
+        cout << "Join game ..." << endl;
         user->status = USER_READY;
         user->game_id = game->getId();
         game->addMembers(request->client_id);
@@ -58,7 +63,7 @@ struct Response newroom(struct Request *request)
     struct Response response;
     response.status = SUCCESS;
     response.type = RESPONSE_NEW_ROOM;
-    strcpy(response.message, "Create new room !");
+    strcpy(response.message, "room_id owner_id");
     return response;
 }
 
@@ -80,7 +85,7 @@ struct Response invite(struct Request *request)
         strcpy(response.message, "Not found !");
         return response;
     }
-    if (user == nullptr)
+    if (user == nullptr || user->status != USER_ONLINE)
     {
         response.status = ERROR;
         strcpy(response.message, "User offline !");
@@ -149,19 +154,19 @@ struct Response chat(struct Request *request)
 {
     User *user = find_user(request->client_id, users);
     Game *game = find_game(user->game_id, games);
-    cout << request->message << endl;
-    vector<int> listmem = game->getMembers();
-    for (int member_id : listmem)
+    cout <<"User " << request->client_id << " : " <<request->message << endl;
+    for (int member_id : game->getMembers())
     {
         if (member_id != request->client_id)
         {
+            cout << "Send : "<< member_id << endl;
             user = find_user(member_id, users);
             struct Response mes;
             mes.status = SUCCESS;
             mes.type = RESPONSE_SEND_MESSAGE;
             strcpy(mes.message, request->message);
-            send(user->getClientSocket(), &mes, strlen(request->message), 0);
-            cout << user->getUsername() << " " << user->game_id << endl;
+            cout <<"Message : " << mes.message << endl;
+            send(user->getClientSocket(), &mes, sizeof(struct Response), 0);
         }
     }
     Chat chat(request->client_id, game->getId(), request->message);
