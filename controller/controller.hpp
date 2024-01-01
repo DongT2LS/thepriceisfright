@@ -16,14 +16,14 @@ struct Response logout(struct Request *request);
 
 // gamecontroler
 
-void join(struct Request *request);
-void newroom(struct Request *request);
-void invite(struct Request *request);
-void leave(struct Request *request);
-void choose(struct Request *request);
-void ready(struct Request *request);
-void chat(struct Request *request);
-void start(struct Request *request);
+struct Response join(struct Request *request);
+struct Response newroom(struct Request *request);
+struct Response invite(struct Request *request);
+struct Response leave(struct Request *request);
+struct Response choose(struct Request *request);
+struct Response ready(struct Request *request);
+struct Response chat(struct Request *request);
+struct Response start(struct Request *request);
 
 // service
 User* find_user(int _id, vector<User*> users);

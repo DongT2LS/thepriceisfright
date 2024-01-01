@@ -154,84 +154,8 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    // Send and receive messages
-    // while (1) {
-    // printf("Enter message: ");
-    // fgets(message, sizeof(message), stdin);
-    // struct Request *request = malloc(100);
-    // request->message = "Hello";
-    // request->status = SIGNUP;
-    // Send the message to the server
-
-    // struct Request request2;
-    // request2.client_id = 3;
-    // request2.client_socket = 2;
-    // request2.type = CHAT;
-    // cout << "chat" <<endl;
-    // send(client_socket, &request2, sizeof(struct Request), 0);
-    // Receive the server's response
-    // if (recv(client_socket, message, sizeof(message), 0) == 0) {
-    //     printf("Server disconnected\n");
-    //     break;
-    // }
-
-    // printf("Server response : OKE\n");
-    // memset(message, 0, sizeof(message));
-    // usleep(200000);
-    // }
 
     close(client_socket);
 
     return 0;
 }
-
-// client.c
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <unistd.h>
-// #include <arpa/inet.h>
-// #include <pthread.h>
-// #define SERVER_IP "127.0.0.1"
-// #define SERVER_PORT 8888
-// #define BUFFER_SIZE 1024
-
-// int main() {
-//     int client_socket;
-//     struct sockaddr_in server_address;
-//     pthread_t thread_id;
-
-//     client_socket = socket(AF_INET, SOCK_STREAM, 0);
-//     if (client_socket == -1) {
-//         perror("Error creating socket");
-//         exit(EXIT_FAILURE);
-//     }
-
-//     server_address.sin_family = AF_INET;
-//     server_address.sin_addr.s_addr = inet_addr(SERVER_IP);
-//     server_address.sin_port = htons(SERVER_PORT);
-
-//     if (connect(client_socket, (struct sockaddr *)&server_address, sizeof(server_address)) == -1) {
-//         perror("Error connecting to server");
-//         close(client_socket);
-//         exit(EXIT_FAILURE);
-//     }
-
-//     printf("Connected to server.\n");
-
-//     // Tạo một thread để nhận tin nhắn từ server
-//     if (pthread_create(&thread_id, NULL, receive_messages, &client_socket) != 0) {
-//         perror("Error creating thread");
-//         close(client_socket);
-//         exit(EXIT_FAILURE);
-//     }
-
-//     // Gửi tin nhắn từ client đến server
-//     char message[BUFFER_SIZE];
-//     while (1) {
-//         fgets(message, BUFFER_SIZE, stdin);
-//         send(client_socket, message, strlen(message), 0);
-//     }
-
-//     return 0;
-// }

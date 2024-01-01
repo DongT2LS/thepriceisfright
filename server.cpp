@@ -34,28 +34,28 @@ void handle_request(struct Request *request)
         response = logout(request);
         break;
     case NEW_ROOM:
-        newroom(request);
+        response = newroom(request);
         break;
     case JOIN:
-        join(request);
+        response = join(request);
         break;
     case INVITE:
-        invite(request);
+        response = invite(request);
         break;
     case LEAVE:
-        leave(request);
+        response = leave(request);
         break;
     case CHOOSE:
-        choose(request);
+        response = choose(request);
         break;
     case CHAT:
-        chat(request);
+        response = chat(request);
         break;
     case READY:
-        ready(request);
+        response = ready(request);
         break;
     case START:
-        start(request);
+        response = start(request);
         break;
     default:
         printf("Not found ! \n");

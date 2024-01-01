@@ -1,66 +1,86 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 #include "../model/request.hpp"
-#include<iostream>
+#include <iostream>
 #include "controller.hpp"
 #include "../model/chat.hpp"
 #include <sys/socket.h>
-
+#include "../model/response.hpp"
 using namespace std;
 
-void join(struct Request *request)
+struct Response join(struct Request *request)
 {
+    struct Response response;
     int game_id = atoi(request->message);
-    Game *game = find_game(game_id,games); 
-    User *user = find_user(request->client_id,users);
-    if(game == nullptr){
-        cout << "Not found !" << endl;
-        return;
+    Game *game = find_game(game_id, games);
+    User *user = find_user(request->client_id, users);
+    if (game == nullptr)
+    {
+        response.status = ERROR;
+        strcpy(response.message, "Not found !");
+        return response;
     }
-    if(user == nullptr || user->status == USER_OFFLINE) {
-        cout << "User offline !" << endl;
-        return;
+    if (user == nullptr || user->status == USER_OFFLINE)
+    {
+        response.status = ERROR;
+        strcpy(response.message, "User offline !");
+        return response;
     }
     switch (game->status)
     {
     case GAME_END:
-        cout << "GAME ended !" << endl;
-        break;
+        response.status = ERROR;
+        strcpy(response.message, "Game end !");
+        return response;
     case GAME_INPROGRESS:
-        cout << "GAME started !" << endl;
-        break;
+        response.status = ERROR;
+        strcpy(response.message, "Game started !");
+        return response;
     case GAME_READY:
         user->status = USER_READY;
         user->game_id = game->getId();
         game->addMembers(request->client_id);
-        cout << "JOIN ... " << user->getUsername() << endl;
+        response.status = SUCCESS;
+        strcpy(response.message, "Join game !");
+        return response;
     default:
         break;
     }
-    printf("JOIN ... \n");
+    response.status = SUCCESS;
+    strcpy(response.message, "Join game !");
+    return response;
 }
 
-void newroom(struct Request *request)
+struct Response newroom(struct Request *request)
 {
     create_game(request->client_id);
     cout << "NEW ROOM " << request->client_id << endl;
+    struct Response response;
+    response.status = SUCCESS;
+    strcpy(response.message, "Create new room !");
+    return response;
 }
 
-void invite(struct Request *request)
+struct Response invite(struct Request *request)
 {
-    char *game_id_string,*user_id_string;
-    game_id_string = strtok(request->message," ");
-    user_id_string = strtok(NULL,"\0");
+    struct Response response;
+    char *game_id_string, *user_id_string;
+    game_id_string = strtok(request->message, " ");
+    user_id_string = strtok(NULL, "\0");
     int game_id = atoi(game_id_string);
     int user_id = atoi(user_id_string);
-    Game *game = find_game(game_id,games); 
-    User *user = find_user(user_id,users);
-    if(game == nullptr){
-        cout << "Not found !" << endl;
-        return;
+    Game *game = find_game(game_id, games);
+    User *user = find_user(user_id, users);
+    if (game == nullptr)
+    {
+        response.status = ERROR;
+        strcpy(response.message, "Not found !");
+        return response;
     }
-    if(user == nullptr) {
-        cout << "User offline !" << endl;
-        return;
+    if (user == nullptr)
+    {
+        response.status = ERROR;
+        strcpy(response.message, "User offline !");
+        return response;
     }
     switch (game->status)
     {
@@ -74,76 +94,105 @@ void invite(struct Request *request)
         user->status = USER_READY;
         user->game_id = game->getId();
         game->addMembers(user_id);
-        cout << "INVITE ... " << user->getId()<< endl;
+        cout << "INVITE ... " << user->getId() << endl;
     default:
         break;
     }
 }
 
-void leave(struct Request *request)
+struct Response leave(struct Request *request)
 {
-    User *user = find_user(request->client_id,users);
+    User *user = find_user(request->client_id, users);
     user->game_id = 0;
     user->status = USER_ONLINE;
     cout << user->getUsername() << "LEAVE ...\n";
+    struct Response response;
+    response.status = SUCCESS;
+    strcpy(response.message, "leave ...");
+    return response;
 }
 
-void choose(struct Request *request)
+struct Response choose(struct Request *request)
 {
-
-    printf("CHOOSE ...\n");
+    struct Response response;
+    response.status = SUCCESS;
+    strcpy(response.message, "Choose ...");
+    return response;
 }
 
-void ready(struct Request *request)
+struct Response ready(struct Request *request)
 {
-    User *user = find_user(request->client_id,users);
+    User *user = find_user(request->client_id, users);
     user->status = USER_PLAYING;
-    cout << user->getUsername() <<" READY ...\n" ;
+    cout << user->getUsername() << " READY ...\n";
+    struct Response response;
+    response.status = SUCCESS;
+    strcpy(response.message, "Ready ...");
+    return response;
 }
 
-void chat(struct Request *request)
+struct Response chat(struct Request *request)
 {
-    User *user = find_user(request->client_id,users);
-    Game *game = find_game(user->game_id,games);
+    User *user = find_user(request->client_id, users);
+    Game *game = find_game(user->game_id, games);
     cout << request->message << endl;
     vector<int> listmem = game->getMembers();
-    for(int member_id : listmem){
-        user = find_user(member_id,users);
-        send(user->getClientSocket(),request->message,strlen(request->message),0);    
-        cout << user->getUsername() << " " << user->game_id << endl;
+    for (int member_id : listmem)
+    {
+        if (member_id != request->client_id)
+        {
+            user = find_user(member_id, users);
+            struct Response mes;
+            mes.status = SUCCESS;
+            strcpy(mes.message, request->message);
+            send(user->getClientSocket(), &mes, strlen(request->message), 0);
+            cout << user->getUsername() << " " << user->game_id << endl;
+        }
     }
-    Chat chat(request->client_id,game->getId(),request->message);
+    Chat chat(request->client_id, game->getId(), request->message);
     chat.store();
-    cout<<"CHAT ..." <<endl;
+    struct Response response;
+    response.status = SUCCESS;
+    strcpy(response.message, "Sent message !");
+    return response;
 }
 
-void start(struct Request *request)
+struct Response start(struct Request *request)
 {
+    struct Response response;
     int game_id = atoi(request->message);
-    Game *game = find_game(game_id,games);
+    Game *game = find_game(game_id, games);
     cout << game_id << " " << game->getId() << endl;
-    if(game == nullptr) {
-        cout << "Not found " << game_id << endl;
-        return;
-    }
-    User *user = find_user(request->client_id,users);
-    user->status = USER_PLAYING;
-    if(game->getOwnerId() != request->client_id)
+    if (game == nullptr)
     {
-        cout << "Owner_id " << game->getOwnerId() << " Your_id : " << request->client_id << " Game_id : " << game->getId() << endl;
-        cout << "You are not the owner of this game" << endl;
-        return;
-    }else{
-        for(int member_id : game->getMembers())
+        response.status = ERROR;
+        strcpy(response.message, "not found ...");
+        return response;
+    }
+    User *user = find_user(request->client_id, users);
+    user->status = USER_PLAYING;
+    if (game->getOwnerId() != request->client_id)
+    {
+        response.status = ERROR;
+        strcpy(response.message, "You are not the owner of this game");
+        return response;
+    }
+    else
+    {
+        for (int member_id : game->getMembers())
         {
-            User *user = find_user(member_id,users);
-            if(user->status != USER_PLAYING){
-                cout << "Co nguoi choi chua san sang" << endl;
-                return;
+            User *user = find_user(member_id, users);
+            if (user->status != USER_PLAYING)
+            {
+                response.status = ERROR;
+                strcpy(response.message, "Players not ready");
+                return response;
             }
         }
     }
     game->status = GAME_INPROGRESS;
 
-    printf("START ...\n");
+    response.status = SUCCESS;
+    strcpy(response.message, "Start game");
+    return response;
 }
