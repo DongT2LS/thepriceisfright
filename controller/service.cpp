@@ -3,7 +3,8 @@
 
 vector<Game *> games;
 vector<User *> users;
-
+vector<Question *> questions;
+vector<Chat *> chats;
 User *find_user(int _id, vector<User *> users)
 {
     for (User *user : users)
@@ -40,6 +41,16 @@ Game *find_game(int _id, vector<Game *> games)
     return nullptr;
 }
 
+void create_game(int owner_id)
+{
+    int game_id = games.size() + 1;
+    cout << "Game : " << game_id << "owner_id :" << owner_id << endl;
+    User *user = find_user(owner_id, users);
+    user->status = USER_READY;
+    user->game_id = game_id;
+    games.push_back(new Game(game_id, owner_id));
+}
+
 void getGameDatabase()
 {
     FILE *file = fopen(GAME_DATABASE, "r");
@@ -59,16 +70,6 @@ void getGameDatabase()
     fclose(file);
 }
 
-void create_game(int owner_id)
-{
-    int game_id = games.size() + 1;
-    cout << "Game : " << game_id << "owner_id :" << owner_id << endl;
-    User *user = find_user(owner_id,users);
-    user->status = USER_READY;
-    user->game_id = game_id;
-    games.push_back(new Game(game_id, owner_id));
-}
-
 void getUserDatabase()
 {
     FILE *file = fopen(USER_DATABASE, "r");
@@ -81,14 +82,31 @@ void getUserDatabase()
     int id;
     char username[50];
     char password[50];
-    
-    while (fscanf(file, "%d %s %s", &id, username, password) == 3) // Nếu đọc đủ 3 trường của 1 account thì tiếp tục đọc
-    {
 
+    while (fscanf(file, "%d %s %s", &id, username, password) == 3)
+    {
         users.push_back(new User(id, username, password));
-        // delete(user);
     }
-    cout << "Chan vcl" << endl;
     fclose(file);
 }
 
+void getQuestionDatabase()
+{
+    FILE *file = fopen(QUESTION_DATABASE, "r");
+
+    if (file == NULL)
+    {
+        printf("Can't open file : %s\n", QUESTION_DATABASE);
+        return;
+    }
+    int id;
+    int true_answer;
+    char question[300];
+    char *answers[4];
+
+    while (fscanf(file, "%d %d %s %s %s %s %s\n", &id, &true_answer, question, answers[0], answers[1], answers[2], answers[3]) == 7)
+    {
+        questions.push_back(new Question(id, question, answers, true_answer));
+    }
+    fclose(file);
+}

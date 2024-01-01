@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <cstring>
+#include "../config/config.hpp"
 using namespace std;
 
 class Question
@@ -12,7 +13,7 @@ private:
     int true_answer;
 
 public:
-    Question(int _id, const char *_question, const char *_answers[4], int _true_answer)
+    Question(int _id, char *_question, char *_answers[4], int _true_answer)
         : id(_id), true_answer(_true_answer)
     {
         // Sử dụng strncpy để tránh tràn bộ nhớ cho câu hỏi
@@ -28,4 +29,16 @@ public:
     }
 
     ~Question() {}
+
+    void store()
+    {
+        FILE *file = fopen(QUESTION_DATABASE, "a");
+        if (file == NULL)
+        {
+            printf("Can't open file : %s\n", QUESTION_DATABASE);
+            return;
+        }
+        fprintf(file, "%d %d %s %s %s %s %s\n", id,true_answer,question,answers[0],answers[1],answers[2],answers[3]);
+        fclose(file);
+    }
 };

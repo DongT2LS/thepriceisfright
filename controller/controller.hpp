@@ -33,4 +33,6 @@ Game* find_game(int _id, vector<Game*> games);
 void create_game(int owner_id);
 void getUserDatabase();
 void getGameDatabase();
+void getQuestionDatabase();
+void getChatDatabase();
 #endif

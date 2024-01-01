@@ -49,7 +49,9 @@ struct Response login(struct Request *request)
                 user->setClientSocket(request->client_socket);
                 user->status = USER_ONLINE;
                 printf("%s online !\n", user->getUsername());
-                strcpy(response.message,"User online !\n");
+                char id_string[5];
+                sprintf(id_string,"%d",user->getId());
+                strcpy(response.message,id_string);
                 response.status = SUCCESS;
                 return response;
             }

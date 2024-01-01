@@ -14,6 +14,8 @@
 
 using namespace std;
 
+int socket_id;
+
 void *receive_messages(void *arg)
 {
     int socket = *((int *)arg);
@@ -30,6 +32,10 @@ void *receive_messages(void *arg)
             exit(EXIT_SUCCESS);
         }
         printf("Received from server: %s\n", response->message);
+        if(response->type == RESPONSE_LOGIN)
+        {
+            socket_id = atoi(response->message);
+        }
     }
 }
 
@@ -83,10 +89,10 @@ int main(int argc, char *argv[])
         cin >> choice;
         __fpurge(stdin);
         struct Request request;
+        request.client_id = socket_id;
         switch (choice)
         {
         case 1:
-            request.client_id = 0;
             request.client_socket = 0;
             request.type = SIGNUP;
             cout << "Nhap tai khoan + mat khau : ";
@@ -96,7 +102,6 @@ int main(int argc, char *argv[])
             cout << "SIGNUP ... " << endl;
             break;
         case 2:
-            request.client_id = 0;
             request.client_socket = 0;
             request.type = LOGIN;
             cout << "Nhap tai khoan + mat khau : ";
@@ -106,7 +111,6 @@ int main(int argc, char *argv[])
             cout << "LOGIN ..." << endl;
             break;
         case 3:
-            request.client_id = 3;
             request.client_socket = 0;
             request.type = SIGNUP;
             cout << "Nhap tai khoan + mat khau : ";
@@ -116,7 +120,6 @@ int main(int argc, char *argv[])
             cout << "SIGN UP" << endl;
             break;
         case 4:
-            request.client_id = 3;
             request.client_socket = 0;
             request.type = CHAT;
             cout << "Nhap tin nhan : ";
@@ -127,7 +130,6 @@ int main(int argc, char *argv[])
             cout << "CHAT ..." << endl;
             break;
         case 5:
-            request.client_id = 3;
             request.client_socket = 0;
             request.type = START;
             strcpy(request.message, "1");
@@ -135,7 +137,6 @@ int main(int argc, char *argv[])
             cout << "START ..." << endl;
             break;
         case 6:
-            request.client_id = 3;
             request.client_socket = 0;
             request.type = LOGOUT;
             strcpy(request.message, "");
@@ -143,12 +144,17 @@ int main(int argc, char *argv[])
             cout << "LOG OUT ..." << endl;
             break;
         case 7:
-            request.client_id = 3;
             request.client_socket = 0;
             request.type = NEW_ROOM;
             strcpy(request.message, "");
             send(client_socket, &request, sizeof(struct Request), 0);
             cout << "NEW ROOM ..." << endl;
+            break;
+        case 8:
+            request.client_socket = 0;
+            request.type = JOIN;
+            cin >> request.message;
+            send(client_socket, &request, sizeof(struct Request), 0);
             break;
         default:
             break;

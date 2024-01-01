@@ -62,6 +62,7 @@ struct Response newroom(struct Request *request)
     return response;
 }
 
+
 struct Response invite(struct Request *request)
 {
     struct Response response;
@@ -88,19 +89,25 @@ struct Response invite(struct Request *request)
     switch (game->status)
     {
     case GAME_END:
-        cout << "GAME ended !" << endl;
-        break;
+        response.status = ERROR;
+        strcpy(response.message, "Game end !");
+        return response;
     case GAME_INPROGRESS:
-        cout << "GAME started !" << endl;
-        break;
+        response.status = ERROR;
+        strcpy(response.message, "Game started !");
+        return response;
     case GAME_READY:
-        user->status = USER_READY;
-        user->game_id = game->getId();
-        game->addMembers(user_id);
-        cout << "INVITE ... " << user->getId() << endl;
+        char mes[10];
+        response.status = SUCCESS;
+        strcpy(response.message, game_id_string);
+        return response;
     default:
         break;
     }
+    char mes[10];
+    response.status = SUCCESS;
+    strcpy(response.message, game_id_string);
+    return response;
 }
 
 struct Response leave(struct Request *request)
@@ -109,7 +116,7 @@ struct Response leave(struct Request *request)
     user->game_id = 0;
     user->status = USER_ONLINE;
     cout << user->getUsername() << "LEAVE ...\n";
-    
+
     struct Response response;
     response.type = RESPONSE_LEAVE;
     response.status = SUCCESS;
