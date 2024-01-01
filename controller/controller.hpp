@@ -9,6 +9,7 @@ extern vector<Game*> games;
 extern vector<User*> users;
 extern vector<Question*> questions;
 extern vector<Chat*> chats;
+
 // usercontroller 
 struct Response signup(struct Request *request);
 struct Response login(struct Request *request);

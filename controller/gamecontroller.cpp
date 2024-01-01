@@ -10,6 +10,7 @@ using namespace std;
 struct Response join(struct Request *request)
 {
     struct Response response;
+    response.type = RESPONSE_JOIN;
     int game_id = atoi(request->message);
     Game *game = find_game(game_id, games);
     User *user = find_user(request->client_id, users);
@@ -56,6 +57,7 @@ struct Response newroom(struct Request *request)
     cout << "NEW ROOM " << request->client_id << endl;
     struct Response response;
     response.status = SUCCESS;
+    response.type = RESPONSE_NEW_ROOM;
     strcpy(response.message, "Create new room !");
     return response;
 }
@@ -63,6 +65,7 @@ struct Response newroom(struct Request *request)
 struct Response invite(struct Request *request)
 {
     struct Response response;
+    response.type = RESPONSE_INVITE;
     char *game_id_string, *user_id_string;
     game_id_string = strtok(request->message, " ");
     user_id_string = strtok(NULL, "\0");
@@ -106,7 +109,9 @@ struct Response leave(struct Request *request)
     user->game_id = 0;
     user->status = USER_ONLINE;
     cout << user->getUsername() << "LEAVE ...\n";
+    
     struct Response response;
+    response.type = RESPONSE_LEAVE;
     response.status = SUCCESS;
     strcpy(response.message, "leave ...");
     return response;
@@ -115,6 +120,7 @@ struct Response leave(struct Request *request)
 struct Response choose(struct Request *request)
 {
     struct Response response;
+    response.type = RESPONSE_CHOOSE;
     response.status = SUCCESS;
     strcpy(response.message, "Choose ...");
     return response;
@@ -127,6 +133,7 @@ struct Response ready(struct Request *request)
     cout << user->getUsername() << " READY ...\n";
     struct Response response;
     response.status = SUCCESS;
+    response.type = RESPONSE_READY;
     strcpy(response.message, "Ready ...");
     return response;
 }
@@ -144,6 +151,7 @@ struct Response chat(struct Request *request)
             user = find_user(member_id, users);
             struct Response mes;
             mes.status = SUCCESS;
+            mes.type = RESPONSE_SEND_MESSAGE;
             strcpy(mes.message, request->message);
             send(user->getClientSocket(), &mes, strlen(request->message), 0);
             cout << user->getUsername() << " " << user->game_id << endl;
@@ -152,6 +160,7 @@ struct Response chat(struct Request *request)
     Chat chat(request->client_id, game->getId(), request->message);
     chat.store();
     struct Response response;
+    response.type = RESPONSE_CHAT;
     response.status = SUCCESS;
     strcpy(response.message, "Sent message !");
     return response;
@@ -160,6 +169,7 @@ struct Response chat(struct Request *request)
 struct Response start(struct Request *request)
 {
     struct Response response;
+    response.type = RESPONSE_START;
     int game_id = atoi(request->message);
     Game *game = find_game(game_id, games);
     cout << game_id << " " << game->getId() << endl;

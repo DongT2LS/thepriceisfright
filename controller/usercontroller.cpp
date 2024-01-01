@@ -12,6 +12,7 @@ using namespace std;
 struct Response signup(struct Request *request)
 {
     struct Response response;
+    response.type = RESPONSE_SIGNUP;
     char *username, *password;
     username = strtok(request->message, " ");
     password = strtok(NULL, "\0");
@@ -34,6 +35,7 @@ struct Response signup(struct Request *request)
 struct Response login(struct Request *request)
 {
     struct Response response;
+    response.type = RESPONSE_LOGIN;
     char *username, *password;
     username = strtok(request->message, " ");
     password = strtok(NULL, "\0");
@@ -64,6 +66,7 @@ struct Response login(struct Request *request)
 struct Response logout(struct Request *request)
 {
     struct Response response;
+    response.type = RESPONSE_LOGOUT;
     cout << "Logout !" << endl;
     for (User *user : users)
     {
