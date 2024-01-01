@@ -3,15 +3,16 @@
 
 #include "../model/game.hpp"
 #include "../model/chat.hpp"
+
 // global var
 extern vector<Game*> games;
 extern vector<User*> users;
 extern vector<Question*> questions;
 extern vector<Chat*> chats;
 // usercontroller 
-void signup(struct Request *request);
-void login(struct Request *request);
-void logout(struct Request *request);
+struct Response signup(struct Request *request);
+struct Response login(struct Request *request);
+struct Response logout(struct Request *request);
 
 // gamecontroler
 
@@ -30,4 +31,5 @@ void set_status_user(int _id,UserStatus status,vector<User*> users);
 Game* find_game(int _id, vector<Game*> games);
 void create_game(int owner_id);
 void getUserDatabase();
+void getGameDatabase();
 #endif

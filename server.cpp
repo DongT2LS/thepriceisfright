@@ -12,6 +12,7 @@
 #include "model/request.hpp"
 #include "model/user.hpp"
 #include <vector>
+#include "model/response.hpp"
 #define MAX_CLIENTS 20
 
 using namespace std;
@@ -20,16 +21,17 @@ using namespace std;
 // Tách nhánh để xử lý logic
 void handle_request(struct Request *request)
 {
+    struct Response response;
     switch (request->type)
     {
     case SIGNUP:
-        signup(request);
+        response = signup(request);
         break;
     case LOGIN:
-        login(request);
+        response = login(request);
         break;
     case LOGOUT:
-        logout(request);
+        response = logout(request);
         break;
     case NEW_ROOM:
         newroom(request);
@@ -59,6 +61,7 @@ void handle_request(struct Request *request)
         printf("Not found ! \n");
         break;
     }
+    send(request->client_socket,&response,sizeof(struct Response),0);
 }
 
 // Xử lý request từ client

@@ -5,11 +5,13 @@
 #include <vector>
 #include "../model/request.hpp"
 #include "../model/user.hpp"
+#include "../model/response.hpp"
 
 using namespace std;
 
-void signup(struct Request *request)
+struct Response signup(struct Request *request)
 {
+    struct Response response;
     char *username, *password;
     username = strtok(request->message, " ");
     password = strtok(NULL, "\0");
@@ -17,17 +19,21 @@ void signup(struct Request *request)
     {
         if (strcmp(username, user->getUsername()) == 0)
         {
-            printf("Username invalid");
-            return;
+            printf("Username invalid");    
+            strcpy(response.message,"Username invalid");
+            return response;
         }
     }
     int id = users.size() + 1;
-    User::store(id,username,password);
-    users.push_back(new User(id,username,password));
+    User::store(id, username, password);
+    users.push_back(new User(id, username, password));
+    strcpy(response.message,"Username valid"); 
+    return response;
 }
 
-void login(struct Request *request)
+struct Response login(struct Request *request)
 {
+    struct Response response;
     char *username, *password;
     username = strtok(request->message, " ");
     password = strtok(NULL, "\0");
@@ -41,28 +47,37 @@ void login(struct Request *request)
                 user->setClientSocket(request->client_socket);
                 user->status = USER_ONLINE;
                 printf("%s online !\n", user->getUsername());
-                return;
+                strcpy(response.message,"User online !\n");
+                response.status = SUCCESS;
+                return response;
             }
-            printf("User logged !\n");
-            return;
+            strcpy(response.message,"User logged !\n");
+            response.status = ERROR;
+            return response;
         }
     }
-    printf("Account not exist !\n");
+    strcpy(response.message,"Account not exist !\n");
+    response.status = ERROR;
+    return response;
 }
 
-void logout(struct Request *request)
+struct Response logout(struct Request *request)
 {
+    struct Response response;
     cout << "Logout !" << endl;
     for (User *user : users)
     {
-        if (user->getId() == request->client_id)
+        if (user->getId() == request->client_id && user->status != USER_OFFLINE)
         {
             user->setClientSocket(0);
             user->status = USER_OFFLINE;
             printf("%s offline !\n", user->getUsername());
-            return;
+            response.status = SUCCESS;
+            strcpy(response.message,"Logout");
+            return response;
         }
-        printf("User offline !\n");
-        return;
     }
+    response.status = ERROR;
+    strcpy(response.message,"Not found !");
+    return response;
 }

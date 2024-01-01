@@ -40,7 +40,7 @@ Game *find_game(int _id, vector<Game *> games)
     return nullptr;
 }
 
-void getGameFromDatabase()
+void getGameDatabase()
 {
     FILE *file = fopen(GAME_DATABASE, "r");
 
@@ -50,7 +50,7 @@ void getGameFromDatabase()
         return;
     }
 
-    Game game();
+    Game *game = new Game();
     while (feof(file))
     {
         /* code */
@@ -71,7 +71,6 @@ void create_game(int owner_id)
 
 void getUserDatabase()
 {
-    
     FILE *file = fopen(USER_DATABASE, "r");
 
     if (file == NULL)

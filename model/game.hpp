@@ -59,7 +59,7 @@ public:
     }
 
     // Getter for members
-    const std::vector<int>& getMembers()
+    vector<int> getMembers()
     {
         return members;
     }

@@ -3,6 +3,8 @@
 #include<iostream>
 #include "controller.hpp"
 #include "../model/chat.hpp"
+#include <sys/socket.h>
+
 using namespace std;
 
 void join(struct Request *request)
@@ -88,7 +90,7 @@ void leave(struct Request *request)
 
 void choose(struct Request *request)
 {
-    
+
     printf("CHOOSE ...\n");
 }
 
@@ -101,9 +103,16 @@ void ready(struct Request *request)
 
 void chat(struct Request *request)
 {
-    Chat chat(request->client_id,1,request->message);
-    User *user = find_user(2,users);
-    printf("%s --- %s \n",user->getUsername(),user->getPassword());
+    User *user = find_user(request->client_id,users);
+    Game *game = find_game(user->game_id,games);
+    cout << request->message << endl;
+    vector<int> listmem = game->getMembers();
+    for(int member_id : listmem){
+        user = find_user(member_id,users);
+        send(user->getClientSocket(),request->message,strlen(request->message),0);    
+        cout << user->getUsername() << " " << user->game_id << endl;
+    }
+    Chat chat(request->client_id,game->getId(),request->message);
     chat.store();
     cout<<"CHAT ..." <<endl;
 }
