@@ -17,10 +17,27 @@
 
 using namespace std;
 
+void log_info( struct Request *request){
+    FILE *file = fopen(LOG_DATABASE, "a");
+    if( file == NULL){
+        printf("Cannot open file : %s", LOG_DATABASE);
+        return ;
+    }
+    time_t currentTime;
+    time(&currentTime);
+    struct tm *localTime = localtime(&currentTime);
+    fprintf( file, "%d, %d, %s, %04d-%02d-%02d %02d:%02d:%02d\n", request->type, request->client_id, request->message,localTime->tm_year + 1900, localTime->tm_mon + 1, localTime->tm_mday,
+        localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
+    fclose(file);
+
+
+}
+
 
 // Tách nhánh để xử lý logic
 void handle_request(struct Request *request)
 {
+    log_info(request);
     struct Response response;
     switch (request->type)
     {
