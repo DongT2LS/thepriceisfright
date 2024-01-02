@@ -85,31 +85,24 @@ struct Response invite(struct Request *request)
         strcpy(response.message, "Not found !");
         return response;
     }
+    
+    // Check user exist or user online ?
     if (user == nullptr || user->status != USER_ONLINE)
     {
         response.status = ERROR;
         strcpy(response.message, "User offline !");
         return response;
     }
-    switch (game->status)
-    {
-    case GAME_END:
-        response.status = ERROR;
-        strcpy(response.message, "Game end !");
-        return response;
-    case GAME_INPROGRESS:
-        response.status = ERROR;
-        strcpy(response.message, "Game started !");
-        return response;
-    case GAME_READY:
-        char mes[10];
-        response.status = SUCCESS;
-        strcpy(response.message, game_id_string);
-        return response;
-    default:
-        break;
-    }
-    char mes[10];
+
+    // Send invite to another user
+    struct Response send_mes_response;
+    send_mes_response.status = SUCCESS;
+    send_mes_response.type = RESPONSE_SEND_INVITE;
+    char room_id_string[10];
+    sprintf(room_id_string,"%d",game_id);
+    strcpy(send_mes_response.message,room_id_string);
+    send(user->getClientSocket(),&send_mes_response,sizeof(struct Response),0);
+
     response.status = SUCCESS;
     strcpy(response.message, game_id_string);
     return response;

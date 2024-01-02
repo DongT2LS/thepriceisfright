@@ -41,4 +41,14 @@ public:
         fprintf(file, "%d %d %s %s %s %s %s\n", id,true_answer,question,answers[0],answers[1],answers[2],answers[3]);
         fclose(file);
     }
+
+    char *getQuestion()
+    {
+        return question;
+    }
+
+    char (*getAnswers())[300]
+    {
+        return answers;
+    }
 };

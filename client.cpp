@@ -159,6 +159,14 @@ int main(int argc, char *argv[])
             cin >> request.message;
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
+        case 9:
+            request.client_socket = 0;
+            request.type = INVITE;
+            cout << "Nhap game_id + user_id: " ;
+            fgets(request.message,500,stdin);
+            request.message[strlen(request.message)-1] = '\0';
+            send(client_socket, &request, sizeof(struct Request), 0);
+            break;
         default:
             break;
         }
