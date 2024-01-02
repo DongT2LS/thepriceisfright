@@ -102,11 +102,36 @@ void getQuestionDatabase()
     int id;
     int true_answer;
     char question[300];
-    char *answers[4];
-
+    char answers[4][300];
     while (fscanf(file, "%d %d %s %s %s %s %s\n", &id, &true_answer, question, answers[0], answers[1], answers[2], answers[3]) == 7)
     {
-        questions.push_back(new Question(id, question, answers, true_answer));
+        char *answerPointers[4];
+        for (int i = 0; i < 4; ++i)
+        {
+            answerPointers[i] = answers[i];
+        }
+        questions.push_back(new Question(id, question, answerPointers, true_answer));
     }
     fclose(file);
 }
+
+void getChatDatabase()
+{
+    FILE *file = fopen(CHAT_DATABASE, "r");
+
+    if (file == NULL)
+    {
+        printf("Can't open file : %s\n", CHAT_DATABASE);
+        return;
+    }
+    int game_id;
+    int user_id;
+    char message[300];
+    while (fscanf(file, "%d %d %299[^\n]", &user_id, &game_id, message) == 3)
+    {
+        chats.push_back(new Chat(user_id, game_id, message));
+        cout << user_id << " " << game_id << " " << message << endl;
+    }
+    fclose(file);   
+}
+

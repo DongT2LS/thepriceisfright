@@ -101,8 +101,8 @@ int main(int argc, char *argv[])
 {
     // User::getListUser();   
     getUserDatabase();
-    // getChatDatabase();
-    // getQuestionDatabase();
+    getChatDatabase();
+    getQuestionDatabase();
     // getGameDatabase();
     int server_socket, client_socket;
     struct sockaddr_in server_addr, client_addr;
