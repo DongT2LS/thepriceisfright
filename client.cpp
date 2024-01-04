@@ -21,7 +21,7 @@ void *receive_messages(void *arg)
     int socket = *((int *)arg);
     char buffer[BUFFER_SIZE];
     int bytes_received;
-   
+
     while (1)
     {
         struct Response *response = (struct Response *)malloc(sizeof(struct Response));
@@ -33,7 +33,7 @@ void *receive_messages(void *arg)
             exit(EXIT_SUCCESS);
         }
         cout << "Received from server: " << response->message << endl;
-        if(response->type == RESPONSE_LOGIN)
+        if (response->type == RESPONSE_LOGIN)
         {
             socket_id = atoi(response->message);
         }
@@ -99,8 +99,8 @@ int main(int argc, char *argv[])
             request.client_socket = 0;
             request.type = SIGNUP;
             cout << "Nhap tai khoan + mat khau : ";
-            fgets(request.message,100,stdin);
-            request.message[strlen(request.message)-1] = '\0';
+            fgets(request.message, 100, stdin);
+            request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
             cout << "SIGNUP ... " << endl;
             break;
@@ -108,8 +108,8 @@ int main(int argc, char *argv[])
             request.client_socket = 0;
             request.type = LOGIN;
             cout << "Nhap tai khoan + mat khau : ";
-            fgets(request.message,100,stdin);
-            request.message[strlen(request.message)-1] = '\0';
+            fgets(request.message, 100, stdin);
+            request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
             cout << "LOGIN ..." << endl;
             break;
@@ -117,8 +117,8 @@ int main(int argc, char *argv[])
             request.client_socket = 0;
             request.type = SIGNUP;
             cout << "Nhap tai khoan + mat khau : ";
-            fgets(request.message,100,stdin);
-            request.message[strlen(request.message)-1] = '\0';
+            fgets(request.message, 100, stdin);
+            request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
             cout << "SIGN UP" << endl;
             break;
@@ -126,8 +126,8 @@ int main(int argc, char *argv[])
             request.client_socket = 0;
             request.type = CHAT;
             cout << "Nhap tin nhan : ";
-            fgets(request.message,500,stdin);
-            request.message[strlen(request.message)-1] = '\0';
+            fgets(request.message, 500, stdin);
+            request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
             cout << "CHAT ..." << endl;
             break;
@@ -155,18 +155,32 @@ int main(int argc, char *argv[])
         case 8:
             request.client_socket = 0;
             request.type = JOIN;
-            cout << "Nhap id : " ;
+            cout << "Nhap id : ";
             cin >> request.message;
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
         case 9:
             request.client_socket = 0;
             request.type = INVITE;
-            cout << "Nhap game_id + user_id: " ;
-            fgets(request.message,500,stdin);
-            request.message[strlen(request.message)-1] = '\0';
+            cout << "Nhap game_id + user_id: ";
+            fgets(request.message, 500, stdin);
+            request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
+        case 10:
+            request.client_socket = 0;
+            request.type = CHOOSE;
+            cout << "Nhap answer: ";
+            fgets(request.message, 500, stdin);
+            request.message[strlen(request.message) - 1] = '\0';
+            send(client_socket, &request, sizeof(struct Request), 0);
+            break;
+        case 11:
+            request.client_socket = 0;
+            request.type = END;
+            send(client_socket, &request, sizeof(struct Request), 0);
+            break;
+
         default:
             break;
         }

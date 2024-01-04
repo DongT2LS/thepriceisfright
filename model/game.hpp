@@ -21,15 +21,16 @@ private:
     int id;
     int owner_id;
     vector<int> members;
-    vector<vector<int>> chooses;
-    vector<Question> questions;
+    vector<int> choices[20];
+    vector<int> questions;
     
 public:
     GameStatus status;
+    int order;
     // Constructor
     Game(){}
     Game(int _id,int _owner_id)
-        : id(_id), owner_id(_owner_id) , status(GAME_READY)
+        : id(_id), owner_id(_owner_id) , status(GAME_READY) , order(0)
     {
         members.push_back(_owner_id);
     }
@@ -64,6 +65,18 @@ public:
         return members;
     }
 
+    // get index of member
+    int getMemberIndex(int user_id)
+    {
+        for(int i=0;i<members.size();i++)
+        {
+            if(members[i] == user_id){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     // Setter for members
     void addMembers(int member_id)
     {
@@ -77,23 +90,59 @@ public:
     }
 
     // Getter for questions
-    Question getQuestions(int index)
+    int getQuestions(int index)
     {
         return questions[index];
     }
 
     // Setter for questions
-    void addQuestions(Question newQuestions)
+    void addQuestions(int newQuestions)
     {
         questions.push_back(newQuestions);
     }
 
-    void store()
+    void setChoice(int user_id,int choice)
     {
-        
+        for(int i=0;i<members.size();i++)
+        {
+            if(members[i] == user_id){
+                choices[i].push_back(choice);
+                cout << user_id << " choose " << choice<<endl;
+                break;
+            }
+        }
     }
 
-
+    void store()
+    {
+        FILE *file = fopen(GAME_DATABASE, "a");
+        if (file == NULL)
+        {
+            printf("Can't open file : %s\n", GAME_DATABASE);
+            return;
+        }
+        fprintf(file, "%d\n", id);
+        for(int member_id : members)
+        {
+            fprintf(file,"%d ",member_id);
+        }
+        fprintf(file,"\n");
+        for(int question : questions)
+        {
+            fprintf(file,"%d ",question);
+        }
+        fprintf(file,"\n");
+        for(int i=0;i<members.size();i++)
+        {
+            fprintf(file,"%d ",members[i]);
+            for(int choice : choices[i])
+            {
+                fprintf(file,"%d ",choice);
+            }
+            fprintf(file,"\n");
+        }
+        fclose(file);
+    }
 };
 
 #endif

@@ -34,7 +34,6 @@ Game *find_game(int _id, vector<Game *> games)
     {
         if (game->getId() == _id)
         {
-            cout << game->getId() << " " << game->getOwnerId() << endl;
             return game;
         }
     }
@@ -130,7 +129,6 @@ void getChatDatabase()
     while (fscanf(file, "%d %d %299[^\n]", &user_id, &game_id, message) == 3)
     {
         chats.push_back(new Chat(user_id, game_id, message));
-        cout << user_id << " " << game_id << " " << message << endl;
     }
     fclose(file);   
 }

@@ -23,11 +23,13 @@ struct Response join(struct Request *request)
     }
     if (user == nullptr || user->status == USER_OFFLINE)
     {
-        cout << "User offline !" <<endl;
+        cout << "User offline !" << endl;
         response.status = ERROR;
         strcpy(response.message, "User offline !");
         return response;
     }
+
+    // Check game status
     switch (game->status)
     {
     case GAME_END:
@@ -47,10 +49,14 @@ struct Response join(struct Request *request)
         game->addMembers(request->client_id);
         response.status = SUCCESS;
         strcpy(response.message, "Join game !");
+        int length = game->getMembers().size();
+        for (int i = 0; i < length; i++)
+        {
+            cout << "Member : " << game->getMembers()[i] << endl;
+        }
         return response;
-    default:
-        break;
     }
+
     response.status = SUCCESS;
     strcpy(response.message, "Join game !");
     return response;
@@ -66,7 +72,6 @@ struct Response newroom(struct Request *request)
     strcpy(response.message, "room_id owner_id");
     return response;
 }
-
 
 struct Response invite(struct Request *request)
 {
@@ -85,7 +90,7 @@ struct Response invite(struct Request *request)
         strcpy(response.message, "Not found !");
         return response;
     }
-    
+
     // Check user exist or user online ?
     if (user == nullptr || user->status != USER_ONLINE)
     {
@@ -99,9 +104,9 @@ struct Response invite(struct Request *request)
     send_mes_response.status = SUCCESS;
     send_mes_response.type = RESPONSE_SEND_INVITE;
     char room_id_string[10];
-    sprintf(room_id_string,"%d",game_id);
-    strcpy(send_mes_response.message,room_id_string);
-    send(user->getClientSocket(),&send_mes_response,sizeof(struct Response),0);
+    sprintf(room_id_string, "%d", game_id);
+    strcpy(send_mes_response.message, room_id_string);
+    send(user->getClientSocket(), &send_mes_response, sizeof(struct Response), 0);
 
     response.status = SUCCESS;
     strcpy(response.message, game_id_string);
@@ -124,6 +129,14 @@ struct Response leave(struct Request *request)
 
 struct Response choose(struct Request *request)
 {
+    // Push choice
+    User *user = find_user(request->client_id, users);
+    Game *game = find_game(user->game_id, games);
+    int user_id = request->client_id;
+    int choice = atoi(request->message);
+    game->setChoice(user_id, choice);
+
+    // Send response
     struct Response response;
     response.type = RESPONSE_CHOOSE;
     response.status = SUCCESS;
@@ -147,18 +160,18 @@ struct Response chat(struct Request *request)
 {
     User *user = find_user(request->client_id, users);
     Game *game = find_game(user->game_id, games);
-    cout <<"User " << request->client_id << " : " <<request->message << endl;
+    cout << "User " << request->client_id << " : " << request->message << endl;
     for (int member_id : game->getMembers())
     {
         if (member_id != request->client_id)
         {
-            cout << "Send : "<< member_id << endl;
+            cout << "Send : " << member_id << endl;
             user = find_user(member_id, users);
             struct Response mes;
             mes.status = SUCCESS;
             mes.type = RESPONSE_SEND_MESSAGE;
             strcpy(mes.message, request->message);
-            cout <<"Message : " << mes.message << endl;
+            cout << "Message : " << mes.message << endl;
             send(user->getClientSocket(), &mes, sizeof(struct Response), 0);
         }
     }
@@ -177,6 +190,9 @@ struct Response start(struct Request *request)
     response.type = RESPONSE_START;
     int game_id = atoi(request->message);
     Game *game = find_game(game_id, games);
+    game->addQuestions(1);
+    game->addQuestions(2);
+    game->order = 1;
     cout << game_id << " " << game->getId() << endl;
     if (game == nullptr)
     {
@@ -209,5 +225,33 @@ struct Response start(struct Request *request)
 
     response.status = SUCCESS;
     strcpy(response.message, "Start game");
+    return response;
+}
+
+struct Response end(struct Request *request)
+{
+    User *user = find_user(request->client_id,users);
+    Game *game = find_game(user->game_id, games);
+    game->status = GAME_END;
+    game->store();
+
+    for (int user_id : game->getMembers())
+    {
+        User *user = find_user(user_id, users);
+        user->status = USER_ONLINE;
+        if (user_id != request->client_id)
+        {
+            struct Response memberResponse;
+            memberResponse.status = SUCCESS;
+            memberResponse.type = RESPONSE_SEND_END;
+            strcpy(memberResponse.message, "End game ...\n");
+            send(user->getClientSocket(), &memberResponse, sizeof(struct Response), 0);
+        }
+    }
+    // Send status to owner
+    struct Response response;
+    response.type = RESPONSE_END;
+    response.status = SUCCESS;
+    strcpy(response.message,"End game, owner leaving ...\n");
     return response;
 }

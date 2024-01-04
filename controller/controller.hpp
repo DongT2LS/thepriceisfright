@@ -25,7 +25,7 @@ struct Response choose(struct Request *request);
 struct Response ready(struct Request *request);
 struct Response chat(struct Request *request);
 struct Response start(struct Request *request);
-
+struct Response end(struct Request *request);
 // service
 User* find_user(int _id, vector<User*> users);
 void set_status_user(int _id,UserStatus status,vector<User*> users);

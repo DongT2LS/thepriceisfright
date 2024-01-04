@@ -14,7 +14,8 @@ enum REQUEST_TYPE {
     CHOOSE = 7,
     CHAT = 8,
     READY = 9,
-    START = 10
+    START = 10,
+    END = 11
 };
 
 struct Request {

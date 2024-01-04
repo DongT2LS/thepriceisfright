@@ -29,8 +29,6 @@ void log_info( struct Request *request){
     fprintf( file, "%d, %d, %s, %04d-%02d-%02d %02d:%02d:%02d\n", request->type, request->client_id, request->message,localTime->tm_year + 1900, localTime->tm_mon + 1, localTime->tm_mday,
         localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
     fclose(file);
-
-
 }
 
 
@@ -73,6 +71,9 @@ void handle_request(struct Request *request)
         break;
     case START:
         response = start(request);
+        break;
+    case END:
+        response = end(request);
         break;
     default:
         printf("Not found ! \n");
