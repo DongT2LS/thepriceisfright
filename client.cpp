@@ -102,7 +102,6 @@ int main(int argc, char *argv[])
             fgets(request.message, 100, stdin);
             request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
-            cout << "SIGNUP ... " << endl;
             break;
         case 2:
             request.client_socket = 0;
@@ -111,16 +110,11 @@ int main(int argc, char *argv[])
             fgets(request.message, 100, stdin);
             request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
-            cout << "LOGIN ..." << endl;
             break;
         case 3:
             request.client_socket = 0;
-            request.type = SIGNUP;
-            cout << "Nhap tai khoan + mat khau : ";
-            fgets(request.message, 100, stdin);
-            request.message[strlen(request.message) - 1] = '\0';
+            request.type = LOGOUT;
             send(client_socket, &request, sizeof(struct Request), 0);
-            cout << "SIGN UP" << endl;
             break;
         case 4:
             request.client_socket = 0;
@@ -129,28 +123,23 @@ int main(int argc, char *argv[])
             fgets(request.message, 500, stdin);
             request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
-            cout << "CHAT ..." << endl;
             break;
         case 5:
             request.client_socket = 0;
             request.type = START;
             strcpy(request.message, "1");
             send(client_socket, &request, sizeof(struct Request), 0);
-            cout << "START ..." << endl;
             break;
         case 6:
             request.client_socket = 0;
-            request.type = LOGOUT;
-            strcpy(request.message, "");
+            request.type = READY;
             send(client_socket, &request, sizeof(struct Request), 0);
-            cout << "LOG OUT ..." << endl;
             break;
         case 7:
             request.client_socket = 0;
             request.type = NEW_ROOM;
             strcpy(request.message, "");
             send(client_socket, &request, sizeof(struct Request), 0);
-            cout << "NEW ROOM ..." << endl;
             break;
         case 8:
             request.client_socket = 0;

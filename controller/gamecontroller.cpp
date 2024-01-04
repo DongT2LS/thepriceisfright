@@ -170,8 +170,9 @@ struct Response chat(struct Request *request)
             struct Response mes;
             mes.status = SUCCESS;
             mes.type = RESPONSE_SEND_MESSAGE;
-            strcpy(mes.message, request->message);
-            cout << "Message : " << mes.message << endl;
+            strcpy(mes.message, user->getUsername());
+            strcat(mes.message," ");
+            strcat(mes.message, request->message);
             send(user->getClientSocket(), &mes, sizeof(struct Response), 0);
         }
     }
