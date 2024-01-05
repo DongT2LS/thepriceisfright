@@ -68,6 +68,8 @@ struct Response login(struct Request *request)
                         char user_online_id[5];
                         sprintf(user_online_id,"%d",user_online->getId());
                         strcat(response.message,user_online_id);
+                        strcat(response.message, " ");
+                        strcat(response.message,user->getUsername());
                     }                    
                 }
 
