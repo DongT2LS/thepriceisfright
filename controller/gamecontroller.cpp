@@ -5,6 +5,7 @@
 #include "../model/chat.hpp"
 #include <sys/socket.h>
 #include "../model/response.hpp"
+#include <unistd.h>
 using namespace std;
 
 struct Response join(struct Request *request)
@@ -132,15 +133,28 @@ struct Response choose(struct Request *request)
     // Push choice
     User *user = find_user(request->client_id, users);
     Game *game = find_game(user->game_id, games);
+    int question_id = game->getQuestion(game->turn - 1);
     int user_id = request->client_id;
     int choice = atoi(request->message);
     game->setChoice(user_id, choice);
-    game->checkAnswer(user_id,choice);
+    int score = checkAnswer(user_id, question_id, choice);
+    if (score == 1)
+    {
+        game->addScore(request->client_id);
+    }
+    // game->checkAnswer(user_id,choice);
     // Send response
     struct Response response;
     response.type = RESPONSE_CHOOSE;
     response.status = SUCCESS;
-    strcpy(response.message, "Choose ...");
+    if (score == 1)
+    {
+        strcpy(response.message, "Correct answer");
+    }
+    else
+    {
+        strcpy(response.message, "Wrong answer");
+    }
     return response;
 }
 
@@ -191,7 +205,7 @@ struct Response start(struct Request *request)
     response.type = RESPONSE_START;
     int game_id = atoi(request->message);
     Game *game = find_game(game_id, games);
-    game->turn = 1;
+    game->turn = 0;
     cout << game_id << " " << game->getId() << endl;
     if (game == nullptr)
     {
@@ -237,6 +251,9 @@ struct Response start(struct Request *request)
     game->status = GAME_INPROGRESS;
     response.status = SUCCESS;
     strcpy(response.message, "You started game !");
+    pthread_t pthread_id;
+    detachGame(user->getId(), pthread_id);
+
     return response;
 }
 
@@ -246,21 +263,33 @@ struct Response end(struct Request *request)
     Game *game = find_game(user->game_id, games);
     game->status = GAME_END;
     game->store();
-
-    for (int user_id : game->getMembers())
+    int max_score = 0;
+    for (int i=0;i<game->getMembers().size();i++)
     {
-        User *user = find_user(user_id, users);
-        user->status = USER_ONLINE;
-        if (user_id != request->client_id)
+        if(game->getScore(i) > max_score)
         {
-            struct Response memberResponse;
-            memberResponse.status = SUCCESS;
-            memberResponse.type = RESPONSE_SEND_END;
-            strcpy(memberResponse.message, "End game ...\n");
-            send(user->getClientSocket(), &memberResponse, sizeof(struct Response), 0);
+            max_score = game->getScore(i);
         }
     }
-    // Send status to owner
+    for (int i=0;i<game->getMembers().size();i++)
+    {
+        User *user = find_user(game->getMembers()[i], users);
+        user->status = USER_ONLINE;
+
+        struct Response memberResponse;
+        memberResponse.status = SUCCESS;
+        memberResponse.type = RESPONSE_SEND_END;
+        if(game->getScore(i) == max_score)
+        {
+            strcpy(memberResponse.message, "Winner \n");
+        }else{
+            strcpy(memberResponse.message, "Loser \n");
+        }
+
+        send(user->getClientSocket(), &memberResponse, sizeof(struct Response), 0);
+    }
+    // // Send status to owner
+    sleep(2);
     struct Response response;
     response.type = RESPONSE_END;
     response.status = SUCCESS;

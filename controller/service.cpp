@@ -1,6 +1,9 @@
 #include "controller.hpp"
 #include "../config/config.hpp"
-
+#include "../model/response.hpp"
+#include <sys/socket.h>
+#include <bits/stdc++.h>
+#include <unistd.h>
 vector<Game *> games;
 vector<User *> users;
 vector<Question *> questions;
@@ -35,6 +38,18 @@ Game *find_game(int _id, vector<Game *> games)
         if (game->getId() == _id)
         {
             return game;
+        }
+    }
+    return nullptr;
+}
+
+Question *find_question(int _id, vector<Question *> questions)
+{
+    for (Question *question : questions)
+    {
+        if (question->getId() == _id)
+        {
+            return question;
         }
     }
     return nullptr;
@@ -133,22 +148,72 @@ void getChatDatabase()
     fclose(file);
 }
 
-void *handle_question(void *socket_fd)
+void *handle_question(void *id)
 {
-    int client_socket = *(int *)socket_fd;
+    // Tách luồng để xử lý riêng biệt
+    pthread_detach(pthread_self());
+    int client_id = *(int *)id;
+    cout << "Client id : " << client_id << endl;
+    User *user = find_user(client_id, users);
+    Game *game = find_game(user->game_id, games);
+    sleep(2);
+    for (int question_id : game->getQuestions())
+    {
+        Question *question = find_question(question_id, questions);
+        cout << question->getQuestion() << " : " << question->getAnswers()[0] << " " << question->getAnswers()[1] << " " << question->getAnswers()[2] << " " << question->getAnswers()[3] << endl;
+        for (int user_id : game->getMembers())
+        {
+            User *member = find_user(user_id, users);
+            struct Response sendQuestion;
+            sendQuestion.status = SUCCESS;
+            sendQuestion.type = RESPONSE_SEND_QUESTION;
+            strcpy(sendQuestion.message, question->getQuestion());
+            strcat(sendQuestion.message, " ");
+            strcat(sendQuestion.message, question->getAnswers()[0]);
+            strcat(sendQuestion.message, " ");
+            strcat(sendQuestion.message, question->getAnswers()[1]);
+            strcat(sendQuestion.message, " ");
+            strcat(sendQuestion.message, question->getAnswers()[2]);
+            strcat(sendQuestion.message, " ");
+            strcat(sendQuestion.message, question->getAnswers()[3]);
+
+            send(member->getClientSocket(), &sendQuestion, sizeof(struct Response), 0);
+        }
+        game->turn++;
+        cout << "Turn : " << game->turn <<endl;
+        sleep(5);
+    }
+    
+    pthread_exit(0);
 }
 
-void sendQuestion(int *client_socket)
+void detachGame(int client_id, pthread_t thread_id)
 {
-    pthread_t thread_id;
     // Tạo luồng mới
-    if (pthread_create(&thread_id, NULL, handle_question, &client_socket) < 0)
+    if (pthread_create(&thread_id, NULL, handle_question, &client_id) < 0)
     {
         perror("Could not create thread");
         return;
     }
-
-    // Tách luồng để xử lý riêng biệt
-    pthread_detach(thread_id);
 }
 
+// Cập nhật câu trả lời của người dùng , nếu đúng + 1 điểm , sai thì ko sao
+int checkAnswer(int user_id, int question_id, int answer)
+{
+    User *user = find_user(user_id, users);
+    Game *game = find_game(user->game_id, games);
+    for (int i = 0; i < game->getMembers().size(); i++)
+    {
+        if (game->getMembers()[i] == user_id)
+        {
+            Question *ques = find_question(question_id, questions);
+            cout << "OKE !!!! " << question_id  << endl;
+            if (answer == ques->getTrueAnswer())
+            {
+                return 1; // Cau tra loi dung tra ve 1
+            }
+            return 0;
+        }
+    }
+    return 0;
+}

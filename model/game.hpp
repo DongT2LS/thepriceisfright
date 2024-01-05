@@ -16,7 +16,8 @@ enum GameStatus
     GAME_END
 };
 
-class Game {
+class Game
+{
 private:
     int id;
     int owner_id;
@@ -24,13 +25,14 @@ private:
     vector<int> choices[20];
     vector<int> questions;
     vector<int> score;
+
 public:
     GameStatus status;
     int turn;
     // Constructor
-    Game(){}
-    Game(int _id,int _owner_id)
-        : id(_id), owner_id(_owner_id) , status(GAME_READY) , turn(0)
+    Game() {}
+    Game(int _id, int _owner_id)
+        : id(_id), owner_id(_owner_id), status(GAME_READY), turn(0) , score(20,0)
     {
         members.push_back(_owner_id);
     }
@@ -68,9 +70,10 @@ public:
     // get index of member
     int getMemberIndex(int user_id)
     {
-        for(int i=0;i<members.size();i++)
+        for (int i = 0; i < members.size(); i++)
         {
-            if(members[i] == user_id){
+            if (members[i] == user_id)
+            {
                 return i;
             }
         }
@@ -80,9 +83,10 @@ public:
     // Setter for members
     void addMembers(int member_id)
     {
-        for(int member : members)
+        for (int member : members)
         {
-            if(member == member_id) {
+            if (member == member_id)
+            {
                 cout << "User in this room" << endl;
             }
         }
@@ -90,9 +94,15 @@ public:
     }
 
     // Getter for questions
-    int getQuestions(int index)
+    int getQuestion(int index)
     {
+        cout << index << endl;
         return questions[index];
+    }
+
+    const vector<int> &getQuestions() const
+    {
+        return questions;
     }
 
     // Setter for questions
@@ -102,17 +112,43 @@ public:
         cout << "New question : " << newQuestions << endl;
     }
 
-    void setChoice(int user_id,int choice)
+    void setChoice(int user_id, int choice)
     {
-        for(int i=0;i<members.size();i++)
+        for (int i = 0; i < members.size(); i++)
         {
-            if(members[i] == user_id){
+            if (members[i] == user_id)
+            {
                 choices[i].push_back(choice);
-                cout << user_id << " choose " << choice<<endl;
+                cout << user_id << " choose " << choice << endl;
                 break;
             }
         }
     }
+
+    int getScore(int index)
+    {
+        return score[index];
+    }
+
+    void addScore(int user_id)
+    {
+        cout << " OKE " << endl;
+        for(int i=0;i<members.size();i++)
+        {
+            cout << "OKE " <<  i << endl;
+            cout << score[i] << endl;
+            if(user_id == members[i])
+            {
+                ++score[i];
+                return;
+            }
+        }
+    }
+
+    // int getWinner()
+    // {
+
+    // }
 
     void store()
     {
@@ -123,32 +159,26 @@ public:
             return;
         }
         fprintf(file, "%d\n", id);
-        for(int member_id : members)
+        for (int member_id : members)
         {
-            fprintf(file,"%d ",member_id);
+            fprintf(file, "%d ", member_id);
         }
-        fprintf(file,"\n");
-        for(int question : questions)
+        fprintf(file, "\n");
+        for (int question : questions)
         {
-            fprintf(file,"%d ",question);
+            fprintf(file, "%d ", question);
         }
-        fprintf(file,"\n");
-        for(int i=0;i<members.size();i++)
+        fprintf(file, "\n");
+        for (int i = 0; i < members.size(); i++)
         {
-            fprintf(file,"%d ",members[i]);
-            for(int choice : choices[i])
+            fprintf(file, "%d ", members[i]);
+            for (int choice : choices[i])
             {
-                fprintf(file,"%d ",choice);
+                fprintf(file, "%d ", choice);
             }
-            fprintf(file,"\n");
+            fprintf(file, "\n");
         }
         fclose(file);
-    }
-
-    // Cập nhật câu trả lời của người dùng , nếu đúng + 1 điểm , sai thì ko sao 
-    void checkAnswer(int user_id,int answer)
-    {
-
     }
 };
 
