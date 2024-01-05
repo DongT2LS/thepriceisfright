@@ -23,14 +23,14 @@ private:
     vector<int> members;
     vector<int> choices[20];
     vector<int> questions;
-    
+    vector<int> score;
 public:
     GameStatus status;
-    int order;
+    int turn;
     // Constructor
     Game(){}
     Game(int _id,int _owner_id)
-        : id(_id), owner_id(_owner_id) , status(GAME_READY) , order(0)
+        : id(_id), owner_id(_owner_id) , status(GAME_READY) , turn(0)
     {
         members.push_back(_owner_id);
     }
@@ -99,6 +99,7 @@ public:
     void addQuestions(int newQuestions)
     {
         questions.push_back(newQuestions);
+        cout << "New question : " << newQuestions << endl;
     }
 
     void setChoice(int user_id,int choice)
@@ -142,6 +143,12 @@ public:
             fprintf(file,"\n");
         }
         fclose(file);
+    }
+
+    // Cập nhật câu trả lời của người dùng , nếu đúng + 1 điểm , sai thì ko sao 
+    void checkAnswer(int user_id,int answer)
+    {
+
     }
 };
 

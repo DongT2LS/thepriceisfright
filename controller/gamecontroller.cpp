@@ -135,7 +135,7 @@ struct Response choose(struct Request *request)
     int user_id = request->client_id;
     int choice = atoi(request->message);
     game->setChoice(user_id, choice);
-
+    game->checkAnswer(user_id,choice);
     // Send response
     struct Response response;
     response.type = RESPONSE_CHOOSE;
@@ -171,7 +171,7 @@ struct Response chat(struct Request *request)
             mes.status = SUCCESS;
             mes.type = RESPONSE_SEND_MESSAGE;
             strcpy(mes.message, user->getUsername());
-            strcat(mes.message," ");
+            strcat(mes.message, " ");
             strcat(mes.message, request->message);
             send(user->getClientSocket(), &mes, sizeof(struct Response), 0);
         }
@@ -191,9 +191,7 @@ struct Response start(struct Request *request)
     response.type = RESPONSE_START;
     int game_id = atoi(request->message);
     Game *game = find_game(game_id, games);
-    game->addQuestions(1);
-    game->addQuestions(2);
-    game->order = 1;
+    game->turn = 1;
     cout << game_id << " " << game->getId() << endl;
     if (game == nullptr)
     {
@@ -221,17 +219,30 @@ struct Response start(struct Request *request)
                 return response;
             }
         }
+        for (int member_id : game->getMembers())
+        {
+            if (member_id != request->client_id)
+            {
+                User *user = find_user(member_id, users);
+                struct Response start_response;
+                strcpy(start_response.message, "Start game !");
+                start_response.status = SUCCESS;
+                start_response.type = RESPONSE_START;
+                send(user->getClientSocket(), &start_response, sizeof(struct Response), 0);
+            }
+        }
     }
+    game->addQuestions(1);
+    game->addQuestions(2);
     game->status = GAME_INPROGRESS;
-
     response.status = SUCCESS;
-    strcpy(response.message, "Start game");
+    strcpy(response.message, "You started game !");
     return response;
 }
 
 struct Response end(struct Request *request)
 {
-    User *user = find_user(request->client_id,users);
+    User *user = find_user(request->client_id, users);
     Game *game = find_game(user->game_id, games);
     game->status = GAME_END;
     game->store();
@@ -253,6 +264,6 @@ struct Response end(struct Request *request)
     struct Response response;
     response.type = RESPONSE_END;
     response.status = SUCCESS;
-    strcpy(response.message,"End game, owner leaving ...\n");
+    strcpy(response.message, "End game, owner leaving ...\n");
     return response;
 }

@@ -41,6 +41,23 @@ void *receive_messages(void *arg)
     }
 }
 
+void menu()
+{
+    cout << "MENU -------------------------" << endl;
+    cout << "1 Signup" << endl;
+    cout << "2 Login" << endl;
+    cout << "3 Logout" << endl;
+    cout << "4 New room" << endl;
+    cout << "5 Join" << endl;
+    cout << "6 Invite" << endl;
+    cout << "7 Leave" << endl;
+    cout << "8 Ready" << endl;
+    cout << "9 Start" << endl;
+    cout << "10 Chat" << endl;
+    cout << "11 Choose" << endl;
+    cout << "12 End" << endl;
+}
+
 int main(int argc, char *argv[])
 {
     int client_socket;
@@ -87,12 +104,12 @@ int main(int argc, char *argv[])
     while (1)
     {
         __fpurge(stdin);
+        menu();
         cout << "Nhap lua chon : ";
         cin >> choice;
         __fpurge(stdin);
         struct Request request;
         request.client_id = socket_id;
-        cout << "Client_id : " << request.client_id << endl;
         switch (choice)
         {
         case 1:
@@ -118,37 +135,18 @@ int main(int argc, char *argv[])
             break;
         case 4:
             request.client_socket = 0;
-            request.type = CHAT;
-            cout << "Nhap tin nhan : ";
-            fgets(request.message, 500, stdin);
-            request.message[strlen(request.message) - 1] = '\0';
-            send(client_socket, &request, sizeof(struct Request), 0);
-            break;
-        case 5:
-            request.client_socket = 0;
-            request.type = START;
-            strcpy(request.message, "1");
-            send(client_socket, &request, sizeof(struct Request), 0);
-            break;
-        case 6:
-            request.client_socket = 0;
-            request.type = READY;
-            send(client_socket, &request, sizeof(struct Request), 0);
-            break;
-        case 7:
-            request.client_socket = 0;
             request.type = NEW_ROOM;
             strcpy(request.message, "");
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
-        case 8:
+        case 5:
             request.client_socket = 0;
             request.type = JOIN;
             cout << "Nhap id : ";
             cin >> request.message;
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
-        case 9:
+        case 6:
             request.client_socket = 0;
             request.type = INVITE;
             cout << "Nhap game_id + user_id: ";
@@ -156,7 +154,30 @@ int main(int argc, char *argv[])
             request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
+        case 7:
+            request.type = LEAVE;
+            send(client_socket, &request, sizeof(struct Request), 0);
+            break;
+        case 8:
+            request.client_socket = 0;
+            request.type = READY;
+            send(client_socket, &request, sizeof(struct Request), 0);
+            break;
+        case 9:
+            request.client_socket = 0;
+            request.type = START;
+            strcpy(request.message, "1");
+            send(client_socket, &request, sizeof(struct Request), 0);
+            break;
         case 10:
+            request.client_socket = 0;
+            request.type = CHAT;
+            cout << "Nhap tin nhan : ";
+            fgets(request.message, 500, stdin);
+            request.message[strlen(request.message) - 1] = '\0';
+            send(client_socket, &request, sizeof(struct Request), 0);
+            break;
+        case 11:
             request.client_socket = 0;
             request.type = CHOOSE;
             cout << "Nhap answer: ";
@@ -164,12 +185,11 @@ int main(int argc, char *argv[])
             request.message[strlen(request.message) - 1] = '\0';
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
-        case 11:
+        case 12:
             request.client_socket = 0;
             request.type = END;
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
-
         default:
             break;
         }

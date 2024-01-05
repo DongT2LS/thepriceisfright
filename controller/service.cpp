@@ -130,6 +130,25 @@ void getChatDatabase()
     {
         chats.push_back(new Chat(user_id, game_id, message));
     }
-    fclose(file);   
+    fclose(file);
+}
+
+void *handle_question(void *socket_fd)
+{
+    int client_socket = *(int *)socket_fd;
+}
+
+void sendQuestion(int *client_socket)
+{
+    pthread_t thread_id;
+    // Tạo luồng mới
+    if (pthread_create(&thread_id, NULL, handle_question, &client_socket) < 0)
+    {
+        perror("Could not create thread");
+        return;
+    }
+
+    // Tách luồng để xử lý riêng biệt
+    pthread_detach(thread_id);
 }
 
