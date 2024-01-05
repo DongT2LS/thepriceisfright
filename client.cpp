@@ -33,7 +33,7 @@ void *receive_messages(void *arg)
             exit(EXIT_SUCCESS);
         }
         cout << "Received from server: " << response->message << endl;
-        if (response->type == RESPONSE_LOGIN)
+        if (response->type == RESPONSE_LOGIN && response->status == SUCCESS)
         {
             socket_id = atoi(response->message);
         }

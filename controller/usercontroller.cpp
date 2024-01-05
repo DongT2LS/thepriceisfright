@@ -44,6 +44,11 @@ struct Response login(struct Request *request)
     {
         if (strcmp(username, user->getUsername()) == 0)
         {
+            if(strcmp(password,user->getPassword()) != 0)
+            {
+                response.status = ERROR;
+                strcpy(response.message,"Wrong password");
+            }
             if (user->status == USER_OFFLINE)
             {
                 user->setClientSocket(request->client_socket);
@@ -51,7 +56,23 @@ struct Response login(struct Request *request)
                 printf("%s online !\n", user->getUsername());
                 char id_string[5];
                 sprintf(id_string,"%d",user->getId());
+
                 strcpy(response.message,id_string);
+
+                // Lay danh sach user online
+                for(User *user_online : users)
+                {
+                    if(user_online->status != USER_OFFLINE && user_online->getId() != user->getId())
+                    {
+                        strcat(response.message," ");
+                        char user_online_id[5];
+                        sprintf(user_online_id,"%d",user_online->getId());
+                        strcat(response.message,user_online_id);
+                    }                    
+                }
+
+                cout << response.message << endl;
+
                 response.status = SUCCESS;
                 return response;
             }
