@@ -217,3 +217,68 @@ int checkAnswer(int user_id, int question_id, int answer)
     }
     return 0;
 }
+
+void update_list_online_user()
+{
+    struct Response response;
+    response.status = SUCCESS;
+    response.type = RESPONSE_ONLINE_USER;
+    for(User *user : users)
+    {
+        if(user->status != USER_OFFLINE){
+            char user_id[5];
+            sprintf(user_id,"%d",user->getId());
+            strcat(response.message,user_id);
+            strcat(response.message," ");
+            strcat(response.message,user->getUsername());
+            strcat(response.message," ");
+        }
+    }
+    for(User *user : users)
+    {
+        if(user->status != USER_OFFLINE){
+            send(user->getClientSocket(),&response,sizeof(struct Response),0);
+        }
+    }
+}
+
+void update_list_ready_room()
+{
+    struct Response response;
+    response.status = SUCCESS;
+    response.type = RESPONSE_READY_ROOM;
+    for(Game *game : games)
+    {
+        if(game->status = GAME_READY)
+        {
+            char game_id[5];
+            sprintf(game_id,"%d",game->getId());
+            strcat(response.message,game_id);
+            strcat(response.message," ");
+        }
+    }
+    for(User *user : users)
+    {
+        if(user->status != USER_ONLINE){
+            send(user->getClientSocket(),&response,sizeof(struct Response),0);
+        }
+    }
+}
+
+void get_ready_game(int client_socket)
+{
+    struct Response response;
+    response.status = SUCCESS;
+    response.type = RESPONSE_READY_ROOM;
+    for(Game *game : games)
+    {
+        if(game->status = GAME_READY)
+        {
+            char game_id[5];
+            sprintf(game_id,"%d",game->getId());
+            strcat(response.message,game_id);
+            strcat(response.message," ");
+        }
+    }
+    send(client_socket,&response,sizeof(struct Response),0);
+}

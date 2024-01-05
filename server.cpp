@@ -17,20 +17,21 @@
 
 using namespace std;
 
-void log_info( struct Request *request){
+void log_info(struct Request *request)
+{
     FILE *file = fopen(LOG_DATABASE, "a");
-    if( file == NULL){
+    if (file == NULL)
+    {
         printf("Cannot open file : %s", LOG_DATABASE);
-        return ;
+        return;
     }
     time_t currentTime;
     time(&currentTime);
     struct tm *localTime = localtime(&currentTime);
-    fprintf( file, "%d, %d, %s, %04d-%02d-%02d %02d:%02d:%02d\n", request->type, request->client_id, request->message,localTime->tm_year + 1900, localTime->tm_mon + 1, localTime->tm_mday,
-        localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
+    fprintf(file, "%d, %d, %s, %04d-%02d-%02d %02d:%02d:%02d\n", request->type, request->client_id, request->message, localTime->tm_year + 1900, localTime->tm_mon + 1, localTime->tm_mday,
+            localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
     fclose(file);
 }
-
 
 // Tách nhánh để xử lý logic
 void handle_request(struct Request *request)
@@ -79,7 +80,7 @@ void handle_request(struct Request *request)
         printf("Not found ! \n");
         break;
     }
-    send(request->client_socket,&response,sizeof(struct Response),0);
+    send(request->client_socket, &response, sizeof(struct Response), 0);
 }
 
 // Xử lý request từ client
@@ -91,7 +92,7 @@ void *handle_client(void *socket_fd)
     // char buffer[1024];
     size_t read_size;
     struct Request *request = (struct Request *)malloc(sizeof(struct Request));
-    
+
     while ((read_size = recv(client_socket, request, sizeof(struct Request), 0)) > 0)
     {
         request->client_socket = client_socket;
@@ -101,6 +102,13 @@ void *handle_client(void *socket_fd)
 
     if (read_size == 0)
     {
+        User *user = find_user(request->client_id, users);
+
+        if (user != nullptr)
+        {
+            user->status = USER_OFFLINE;
+            update_list_online_user();
+        }
         printf("Client disconnected: %d\n", client_socket);
         fflush(stdout);
     }
@@ -117,7 +125,7 @@ void *handle_client(void *socket_fd)
 
 int main(int argc, char *argv[])
 {
-    // User::getListUser();   
+    // User::getListUser();
     getUserDatabase();
     getChatDatabase();
     getQuestionDatabase();

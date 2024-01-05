@@ -51,30 +51,20 @@ struct Response login(struct Request *request)
             }
             if (user->status == USER_OFFLINE)
             {
+                // Update client socket va trang thai cua nguoi dung
                 user->setClientSocket(request->client_socket);
                 user->status = USER_ONLINE;
                 printf("%s online !\n", user->getUsername());
+
+                // Thong bao den tat ca user cap nhat nguoi dung online va lay nhung game dang ready
+                update_list_online_user();
+                get_ready_game(request->client_socket);
+
+                // Gui response
                 char id_string[5];
                 sprintf(id_string,"%d",user->getId());
-
                 strcpy(response.message,id_string);
-
-                // Lay danh sach user online
-                for(User *user_online : users)
-                {
-                    if(user_online->status != USER_OFFLINE && user_online->getId() != user->getId())
-                    {
-                        strcat(response.message," ");
-                        char user_online_id[5];
-                        sprintf(user_online_id,"%d",user_online->getId());
-                        strcat(response.message,user_online_id);
-                        strcat(response.message, " ");
-                        strcat(response.message,user->getUsername());
-                    }                    
-                }
-
                 cout << response.message << endl;
-
                 response.status = SUCCESS;
                 return response;
             }
@@ -92,16 +82,20 @@ struct Response logout(struct Request *request)
 {
     struct Response response;
     response.type = RESPONSE_LOGOUT;
-    cout << "Logout !" << endl;
+    cout << "Logout ! " << request->client_id << endl;
     for (User *user : users)
     {
-        if (user->getId() == request->client_id && user->status != USER_OFFLINE)
+        if (user->getId() == request->client_id)
         {
             user->setClientSocket(0);
             user->status = USER_OFFLINE;
             printf("%s offline !\n", user->getUsername());
             response.status = SUCCESS;
             strcpy(response.message,"Logout");
+
+            // Cap nhat nguoi dung dang online
+            update_list_online_user();
+
             return response;
         }
     }

@@ -36,6 +36,7 @@ void *receive_messages(void *arg)
         if (response->type == RESPONSE_LOGIN && response->status == SUCCESS)
         {
             socket_id = atoi(response->message);
+            cout <<"Client_id : " <<socket_id << endl;
         }
         free(response);
     }
