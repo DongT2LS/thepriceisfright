@@ -70,7 +70,14 @@ struct Response newroom(struct Request *request)
     struct Response response;
     response.status = SUCCESS;
     response.type = RESPONSE_NEW_ROOM;
-    strcpy(response.message, "room_id owner_id");
+
+    char room_id_string[3],owner_id_string[3];
+    sprintf(room_id_string,"%d",games.size());
+    sprintf(owner_id_string,"%d",request->client_id);
+
+    strcpy(response.message, room_id_string);
+    strcat(response.message," ");
+    strcat(response.message,owner_id_string);
     return response;
 }
 
@@ -289,7 +296,7 @@ struct Response end(struct Request *request)
         send(user->getClientSocket(), &memberResponse, sizeof(struct Response), 0);
     }
     // // Send status to owner
-    sleep(2);
+    sleep(0.2);
     struct Response response;
     response.type = RESPONSE_END;
     response.status = SUCCESS;
