@@ -71,7 +71,7 @@ struct Response newroom(struct Request *request)
     response.status = SUCCESS;
     response.type = RESPONSE_NEW_ROOM;
 
-    char room_id_string[3],owner_id_string[3];
+    char room_id_string[5],owner_id_string[5];
     sprintf(room_id_string,"%d",games.size());
     sprintf(owner_id_string,"%d",request->client_id);
 
