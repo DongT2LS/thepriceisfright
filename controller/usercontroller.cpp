@@ -6,7 +6,7 @@
 #include "../model/request.hpp"
 #include "../model/user.hpp"
 #include "../model/response.hpp"
-
+#include <unistd.h>
 using namespace std;
 
 struct Response signup(struct Request *request)
@@ -20,15 +20,15 @@ struct Response signup(struct Request *request)
     {
         if (strcmp(username, user->getUsername()) == 0)
         {
-            printf("Username invalid");    
-            strcpy(response.message,"Username invalid");
+            printf("Username invalid");
+            strcpy(response.message, "Username invalid");
             return response;
         }
     }
     int id = users.size() + 1;
     User::store(id, username, password);
     users.push_back(new User(id, username, password));
-    strcpy(response.message,"Username valid"); 
+    strcpy(response.message, "Username valid");
     return response;
 }
 
@@ -44,10 +44,10 @@ struct Response login(struct Request *request)
     {
         if (strcmp(username, user->getUsername()) == 0)
         {
-            if(strcmp(password,user->getPassword()) != 0)
+            if (strcmp(password, user->getPassword()) != 0)
             {
                 response.status = ERROR;
-                strcpy(response.message,"Wrong password");
+                strcpy(response.message, "Wrong password");
             }
             if (user->status == USER_OFFLINE)
             {
@@ -58,22 +58,23 @@ struct Response login(struct Request *request)
 
                 // Thong bao den tat ca user cap nhat nguoi dung online va lay nhung game dang ready
                 update_list_online_user();
+                sleep(0.2);
                 get_ready_game(request->client_socket);
-
+                sleep(0.2);
                 // Gui response
                 char id_string[5];
-                sprintf(id_string,"%d",user->getId());
-                strcpy(response.message,id_string);
+                sprintf(id_string, "%d", user->getId());
+                strcpy(response.message, id_string);
                 cout << response.message << endl;
                 response.status = SUCCESS;
                 return response;
             }
-            strcpy(response.message,"User logged !\n");
+            strcpy(response.message, "User logged !\n");
             response.status = ERROR;
             return response;
         }
     }
-    strcpy(response.message,"Account not exist !\n");
+    strcpy(response.message, "Account not exist !\n");
     response.status = ERROR;
     return response;
 }
@@ -91,8 +92,9 @@ struct Response logout(struct Request *request)
             user->status = USER_OFFLINE;
             printf("%s offline !\n", user->getUsername());
             response.status = SUCCESS;
-            strcpy(response.message,"Logout");
+            strcpy(response.message, "Logout");
 
+            sleep(0.2);
             // Cap nhat nguoi dung dang online
             update_list_online_user();
 
@@ -100,6 +102,6 @@ struct Response logout(struct Request *request)
         }
     }
     response.status = ERROR;
-    strcpy(response.message,"Not found !");
+    strcpy(response.message, "Not found !");
     return response;
 }
