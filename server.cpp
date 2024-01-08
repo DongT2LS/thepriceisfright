@@ -102,11 +102,25 @@ void *handle_client(void *socket_fd)
 
     if (read_size == 0)
     {
-        User *user = find_user(request->client_id, users);
+        User *user;
+        for(User *user_db : users)
+        {
+            if(user_db->getClientSocket() == client_socket){
+                user = user_db;
+                break;
+            }
+        }
 
         if (user != nullptr)
         {
             user->status = USER_OFFLINE;
+            
+            update_list_online_user();
+            struct Response response;
+            response.status = SUCCESS;
+            response.type = RESPONSE_LOGOUT;
+            send(user->getClientSocket(),&response,sizeof(struct Response),0);
+            user->setClientSocket(0);
             update_list_online_user();
         }
         printf("Client disconnected: %d\n", client_socket);
