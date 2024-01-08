@@ -71,13 +71,14 @@ struct Response newroom(struct Request *request)
     response.status = SUCCESS;
     response.type = RESPONSE_NEW_ROOM;
 
-    char room_id_string[5],owner_id_string[5];
-    sprintf(room_id_string,"%d",games.size());
-    sprintf(owner_id_string,"%d",request->client_id);
+    char room_id_string[5], owner_id_string[5];
+    int length = games.size();
+    sprintf(room_id_string, "%d", length);
+    sprintf(owner_id_string, "%d", request->client_id);
 
     strcpy(response.message, room_id_string);
-    strcat(response.message," ");
-    strcat(response.message,owner_id_string);
+    strcat(response.message, " ");
+    strcat(response.message, owner_id_string);
     return response;
 }
 
@@ -271,14 +272,14 @@ struct Response end(struct Request *request)
     game->status = GAME_END;
     game->store();
     int max_score = 0;
-    for (int i=0;i<game->getMembers().size();i++)
+    for (int i = 0; i < game->getMembers().size(); i++)
     {
-        if(game->getScore(i) > max_score)
+        if (game->getScore(i) > max_score)
         {
             max_score = game->getScore(i);
         }
     }
-    for (int i=0;i<game->getMembers().size();i++)
+    for (int i = 0; i < game->getMembers().size(); i++)
     {
         User *user = find_user(game->getMembers()[i], users);
         user->status = USER_ONLINE;
@@ -286,10 +287,12 @@ struct Response end(struct Request *request)
         struct Response memberResponse;
         memberResponse.status = SUCCESS;
         memberResponse.type = RESPONSE_SEND_END;
-        if(game->getScore(i) == max_score)
+        if (game->getScore(i) == max_score)
         {
             strcpy(memberResponse.message, "Winner \n");
-        }else{
+        }
+        else
+        {
             strcpy(memberResponse.message, "Loser \n");
         }
 
@@ -308,19 +311,49 @@ struct Response replay(struct Request *request)
 {
     struct Response response;
 
-    return response;    
+    return response;
 }
 
 struct Response getOnlineUser(struct Request *request)
 {
     struct Response response;
+    response.status = SUCCESS;
+    response.type = RESPONSE_ONLINE_USER;
 
+    // Lay danh sach nguoi dung dang online
+    strcpy(response.message, "");
+    for (User *user : users)
+    {
+        if (user->status != USER_OFFLINE)
+        {
+            char user_id[5];
+            sprintf(user_id, "%d", user->getId());
+            strcat(response.message, user_id);
+            strcat(response.message, " ");
+            strcat(response.message, user->getUsername());
+            strcat(response.message, " ");
+        }
+    }
     return response;
 }
 
 struct Response getReadyRoom(struct Request *request)
 {
     struct Response response;
+    response.status = SUCCESS;
+    response.type = RESPONSE_READY_ROOM;
+    strcpy(response.message, "");
 
+    for (Game *game : games)
+    {
+        if (game->status == GAME_READY)
+        {
+            char game_id[5];
+            sprintf(game_id, "%d", game->getId());
+            strcat(response.message, game_id);
+            strcat(response.message, " ");
+        }
+    }
+    cout << "List room ready : " << response.message << endl;
     return response;
 }

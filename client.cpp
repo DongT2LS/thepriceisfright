@@ -202,12 +202,11 @@ int main(int argc, char *argv[])
         case 14:
             request.client_socket = 0;
             request.type = GET_ONLINE_USER;
-            fgets(request.message, 500, stdin); // Lấy id game
             send(client_socket, &request, sizeof(struct Request), 0);
         case 15:
             request.client_socket = 0;
             request.type = GET_READY_ROOM;
-            fgets(request.message, 500 , stdin); // Lấy id game 
+            // fgets(request.message, 500 , stdin); // Lấy id game 
             send(client_socket, &request, sizeof(struct Request),0);
         default:
             break;
