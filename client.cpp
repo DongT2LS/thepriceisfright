@@ -36,7 +36,7 @@ void *receive_messages(void *arg)
         if (response->type == RESPONSE_LOGIN && response->status == SUCCESS)
         {
             socket_id = atoi(response->message);
-            cout <<"Client_id : " <<socket_id << endl;
+            cout << "Client_id : " << socket_id << endl;
         }
         free(response);
     }
@@ -57,6 +57,9 @@ void menu()
     cout << "10 Chat" << endl;
     cout << "11 Choose" << endl;
     cout << "12 End" << endl;
+    cout << "13 Replay" <<endl;
+    cout << "14 Get online user" << endl;
+    cout << "15 Get ready room" <<endl; 
 }
 
 int main(int argc, char *argv[])
@@ -191,6 +194,21 @@ int main(int argc, char *argv[])
             request.type = END;
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
+        case 13:
+            request.client_socket = 0;
+            request.type = REPLAY;
+            fgets(request.message, 500, stdin); // Lấy id game
+            send(client_socket, &request, sizeof(struct Request), 0);
+        case 14:
+            request.client_socket = 0;
+            request.type = GET_ONLINE_USER;
+            fgets(request.message, 500, stdin); // Lấy id game
+            send(client_socket, &request, sizeof(struct Request), 0);
+        case 15:
+            request.client_socket = 0;
+            request.type = GET_READY_ROOM;
+            fgets(request.message, 500 , stdin); // Lấy id game 
+            send(client_socket, &request, sizeof(struct Request),0);
         default:
             break;
         }

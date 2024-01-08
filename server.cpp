@@ -76,6 +76,15 @@ void handle_request(struct Request *request)
     case END:
         response = end(request);
         break;
+    case REPLAY:
+        response = replay(request);
+        break;
+    case GET_ONLINE_USER:
+        response = getOnlineUser(request);
+        break;
+    case GET_READY_ROOM:
+        response = getReadyRoom(request);
+        break;
     default:
         printf("Not found ! \n");
         break;

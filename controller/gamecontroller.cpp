@@ -303,3 +303,24 @@ struct Response end(struct Request *request)
     strcpy(response.message, "End game, owner leaving ...\n");
     return response;
 }
+
+struct Response replay(struct Request *request)
+{
+    struct Response response;
+
+    return response;    
+}
+
+struct Response getOnlineUser(struct Request *request)
+{
+    struct Response response;
+
+    return response;
+}
+
+struct Response getReadyRoom(struct Request *request)
+{
+    struct Response response;
+
+    return response;
+}

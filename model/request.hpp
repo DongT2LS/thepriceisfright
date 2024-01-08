@@ -15,7 +15,10 @@ enum REQUEST_TYPE {
     CHAT = 8,
     READY = 9,
     START = 10,
-    END = 11
+    END = 11,
+    REPLAY = 12,
+    GET_ONLINE_USER = 13,
+    GET_READY_ROOM
 };
 
 struct Request {
