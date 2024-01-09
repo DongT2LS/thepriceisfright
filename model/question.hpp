@@ -9,7 +9,7 @@ class Question
 private:
     int id;
     char question[300];
-    char answers[4][300];
+    char answers[4][50];
     int true_answer;
 
 public:
@@ -47,7 +47,7 @@ public:
         return question;
     }
 
-    char (*getAnswers())[300]
+    char (*getAnswers())[50]
     {
         return answers;
     }

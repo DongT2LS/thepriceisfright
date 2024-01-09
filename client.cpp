@@ -25,7 +25,7 @@ void *receive_messages(void *arg)
     while (1)
     {
         struct Response *response = (struct Response *)malloc(sizeof(struct Response));
-        bytes_received = recv(socket, response, BUFFER_SIZE, 0);
+        bytes_received = recv(socket, response, sizeof(struct Response), 0);
         if (bytes_received <= 0)
         {
             printf("Server disconnected.\n");
@@ -199,15 +199,18 @@ int main(int argc, char *argv[])
             request.type = REPLAY;
             fgets(request.message, 500, stdin); // Lấy id game
             send(client_socket, &request, sizeof(struct Request), 0);
+            break;
         case 14:
             request.client_socket = 0;
             request.type = GET_ONLINE_USER;
             send(client_socket, &request, sizeof(struct Request), 0);
+            break;
         case 15:
             request.client_socket = 0;
             request.type = GET_READY_ROOM;
             // fgets(request.message, 500 , stdin); // Lấy id game 
             send(client_socket, &request, sizeof(struct Request),0);
+            break;
         default:
             break;
         }

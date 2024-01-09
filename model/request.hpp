@@ -25,5 +25,5 @@ struct Request {
     REQUEST_TYPE type;
     int client_socket;
     int client_id;
-    char message[100];
+    char message[500];
 };

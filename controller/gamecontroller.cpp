@@ -334,6 +334,8 @@ struct Response getOnlineUser(struct Request *request)
             strcat(response.message, " ");
         }
     }
+
+    cout << response.message << endl;
     return response;
 }
 
