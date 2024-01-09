@@ -170,7 +170,8 @@ int main(int argc, char *argv[])
         case 9:
             request.client_socket = 0;
             request.type = START;
-            strcpy(request.message, "1");
+            cout << "Nhap id :" ;
+            cin >> request.message;
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
         case 10:

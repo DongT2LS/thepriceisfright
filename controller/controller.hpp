@@ -40,7 +40,7 @@ void getQuestionDatabase();
 void getChatDatabase();
 void detachGame(int client_socket,pthread_t thread_id);
 int checkAnswer(int user_id , int question_id , int answer);
-void update_list_online_user();
+void update_list_online_user(int client_id);
 void update_list_ready_room();
 void get_ready_game(int client_socket);
 #endif

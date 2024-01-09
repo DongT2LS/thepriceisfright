@@ -32,9 +32,14 @@ public:
     // Constructor
     Game() {}
     Game(int _id, int _owner_id)
-        : id(_id), owner_id(_owner_id), status(GAME_READY), turn(0) , score(20,0)
+        : id(_id), owner_id(_owner_id), status(GAME_READY), turn(0), score(20, 0)
     {
         members.push_back(_owner_id);
+        for (int i = 0; i < 20; ++i)
+        {
+            choices[i] = vector<int>(20, 0);
+            cout <<"Choice" << i << " : " <<choices[i][0] << endl;
+        }
     }
 
     // Getter for id
@@ -118,11 +123,39 @@ public:
         {
             if (members[i] == user_id)
             {
-                choices[i].push_back(choice);
+                choices[i][turn-1] = choice;
                 cout << user_id << " choose " << choice << endl;
                 break;
             }
         }
+    }
+
+    // Thêm hàm getChoice vào lớp Game
+    int getChoice(int user_id, int index)
+    {
+        int memberIndex = getMemberIndex(user_id);
+
+        // Kiểm tra xem thành viên có tồn tại trong game không
+        if (memberIndex != -1)
+        {
+            // Kiểm tra xem có đủ số lượng câu hỏi hay không
+            if (index >= 0 && index < 20)
+            {
+                // Trả về lựa chọn tương ứng của thành viên tại vị trí index
+                return choices[index][memberIndex];
+            }
+            else
+            {
+                cout << "Invalid question index." << endl;
+            }
+        }
+        else
+        {
+            cout << "User not found in the game." << endl;
+        }
+
+        // Trả về giá trị mặc định nếu có lỗi xảy ra
+        return 0;
     }
 
     int getScore(int index)
@@ -133,11 +166,11 @@ public:
     void addScore(int user_id)
     {
         cout << " OKE " << endl;
-        for(int i=0;i<members.size();i++)
+        for (int i = 0; i < members.size(); i++)
         {
-            cout << "OKE " <<  i << endl;
+            cout << "OKE " << i << endl;
             cout << score[i] << endl;
-            if(user_id == members[i])
+            if (user_id == members[i])
             {
                 ++score[i];
                 return;
@@ -172,9 +205,9 @@ public:
         for (int i = 0; i < members.size(); i++)
         {
             fprintf(file, "%d ", members[i]);
-            for (int choice : choices[i])
+            for (int j=0;j<questions.size();j++)
             {
-                fprintf(file, "%d ", choice);
+                fprintf(file, "%d ", choices[i][j]);
             }
             fprintf(file, "\n");
         }

@@ -218,7 +218,7 @@ int checkAnswer(int user_id, int question_id, int answer)
     return 0;
 }
 
-void update_list_online_user()
+void update_list_online_user(int client_id)
 {
     struct Response response;
     response.status = SUCCESS;
@@ -238,7 +238,7 @@ void update_list_online_user()
     }
     for (User *user : users)
     {
-        if (user->status != USER_OFFLINE)
+        if (user->status != USER_OFFLINE && user->getId() != client_id)
         {
             send(user->getClientSocket(), &response, sizeof(struct Response), 0);
         }

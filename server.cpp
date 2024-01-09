@@ -123,14 +123,12 @@ void *handle_client(void *socket_fd)
         if (user != nullptr)
         {
             user->status = USER_OFFLINE;
-            
-            update_list_online_user();
+            update_list_online_user(user->getId());            
             struct Response response;
             response.status = SUCCESS;
             response.type = RESPONSE_LOGOUT;
             send(user->getClientSocket(),&response,sizeof(struct Response),0);
             user->setClientSocket(0);
-            update_list_online_user();
         }
         printf("Client disconnected: %d\n", client_socket);
         fflush(stdout);

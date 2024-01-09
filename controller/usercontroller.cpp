@@ -62,11 +62,7 @@ struct Response login(struct Request *request)
                     printf("%s online !\n", user->getUsername());
 
                     // Thong bao den tat ca user cap nhat nguoi dung online va lay nhung game dang ready
-                    // update_list_online_user();
-                    // sleep(0.2);
-                    // get_ready_game(request->client_socket);
-                    // sleep(0.2);
-                    // Gui response
+                    update_list_online_user(request->client_id);
                     char id_string[5];
                     sprintf(id_string, "%d", user->getId());
                     strcpy(response.message, id_string);
@@ -100,10 +96,7 @@ struct Response logout(struct Request *request)
             response.status = SUCCESS;
             strcpy(response.message, "Logout");
 
-            // sleep(0.2);
-            // Cap nhat nguoi dung dang online
-            // update_list_online_user();
-
+            update_list_online_user(request->client_id);
             return response;
         }
     }
