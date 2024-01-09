@@ -100,9 +100,9 @@ struct Response logout(struct Request *request)
             response.status = SUCCESS;
             strcpy(response.message, "Logout");
 
-            sleep(0.2);
+            // sleep(0.2);
             // Cap nhat nguoi dung dang online
-            update_list_online_user();
+            // update_list_online_user();
 
             return response;
         }

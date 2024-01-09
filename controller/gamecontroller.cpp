@@ -127,12 +127,12 @@ struct Response leave(struct Request *request)
     User *user = find_user(request->client_id, users);
     user->game_id = 0;
     user->status = USER_ONLINE;
-    cout << user->getUsername() << "LEAVE ...\n";
+    cout << user->getUsername() << " LEAVE ...\n";
 
     struct Response response;
     response.type = RESPONSE_LEAVE;
     response.status = SUCCESS;
-    strcpy(response.message, "leave ...");
+    strcpy(response.message, "");
     return response;
 }
 
@@ -310,7 +310,7 @@ struct Response end(struct Request *request)
 struct Response replay(struct Request *request)
 {
     struct Response response;
-
+    
     return response;
 }
 
