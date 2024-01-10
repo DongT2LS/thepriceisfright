@@ -60,9 +60,9 @@ struct Response login(struct Request *request)
                     user->setClientSocket(request->client_socket);
                     user->status = USER_ONLINE;
                     printf("%s online !\n", user->getUsername());
-
+                    
                     // Thong bao den tat ca user cap nhat nguoi dung online va lay nhung game dang ready
-                    update_list_online_user(request->client_id);
+                    update_list_online_user(user->getId());
                     char id_string[5];
                     sprintf(id_string, "%d", user->getId());
                     strcpy(response.message, id_string);
