@@ -216,7 +216,8 @@ void *handle_question(void *id)
         }
         send(member->getClientSocket(), &sendEndGame, sizeof(struct Response), 0);
     }
-
+    sleep(0.5);
+    update_list_ready_room();
     pthread_exit(0);
 }
 
@@ -295,7 +296,7 @@ void update_list_ready_room()
     }
     for (User *user : users)
     {
-        if (user->status != USER_ONLINE)
+        if (user->status == USER_ONLINE)
         {
             send(user->getClientSocket(), &response, sizeof(struct Response), 0);
         }

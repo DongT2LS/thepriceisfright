@@ -128,7 +128,8 @@ struct Response leave(struct Request *request)
     user->game_id = 0;
     user->status = USER_ONLINE;
     cout << user->getUsername() << " LEAVE ...\n";
-
+    update_list_ready_room();
+    sleep(0.5);
     struct Response response;
     response.type = RESPONSE_LEAVE;
     response.status = SUCCESS;
