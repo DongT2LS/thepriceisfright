@@ -29,10 +29,12 @@ struct Response end(struct Request *request);
 struct Response replay(struct Request *request);
 struct Response getOnlineUser(struct Request *request);
 struct Response getReadyRoom(struct Request *request);
+struct Response getHistory(struct Request *request);
 // service
 User* find_user(int _id, vector<User*> users);
 void set_status_user(int _id,UserStatus status,vector<User*> users);
 Game* find_game(int _id, vector<Game*> games);
+Question* find_question(int _id,vector<Question*> questions);
 void create_game(int owner_id);
 void getUserDatabase();
 void getGameDatabase();

@@ -18,7 +18,8 @@ enum REQUEST_TYPE {
     END = 11,
     REPLAY = 12,
     GET_ONLINE_USER = 13,
-    GET_READY_ROOM
+    GET_READY_ROOM,
+    GET_HISTORY
 };
 
 struct Request {

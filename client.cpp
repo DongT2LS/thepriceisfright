@@ -60,6 +60,7 @@ void menu()
     cout << "13 Replay" <<endl;
     cout << "14 Get online user" << endl;
     cout << "15 Get ready room" <<endl; 
+    cout << "16 Get history" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -198,6 +199,7 @@ int main(int argc, char *argv[])
         case 13:
             request.client_socket = 0;
             request.type = REPLAY;
+            cout << "Nhap id game : "; 
             fgets(request.message, 500, stdin); // Lấy id game
             send(client_socket, &request, sizeof(struct Request), 0);
             break;
@@ -211,6 +213,11 @@ int main(int argc, char *argv[])
             request.type = GET_READY_ROOM;
             // fgets(request.message, 500 , stdin); // Lấy id game 
             send(client_socket, &request, sizeof(struct Request),0);
+            break;
+        case 16:
+            request.client_socket = 0;
+            request.type = GET_HISTORY;
+            send(client_socket,&request,sizeof(struct Request),0);
             break;
         default:
             break;

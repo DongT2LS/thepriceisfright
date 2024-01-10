@@ -310,7 +310,51 @@ struct Response end(struct Request *request)
 struct Response replay(struct Request *request)
 {
     struct Response response;
-    
+    response.type = RESPONSE_REPLAY;
+    int game_id = atoi(request->message);
+    Game *game = find_game(game_id,games);
+
+    int checkUserExist = 0;
+    for(int user_id : game->getMembers())
+    {
+        if(user_id == request->client_id)
+        {
+            checkUserExist = 1;
+            break;
+        }
+    }
+
+    if(checkUserExist == 0)
+    {
+        response.status = ERROR;
+        strcpy(response.message,"User not exist !");
+        return response;
+    }
+
+    // Gửi câu hỏi , đáp án + câu trả lời của người chơi 
+    strcpy(response.message,"");
+
+    for(int i=0;i< game->getQuestions().size();i++ )
+    {
+        int question_id = game->getQuestion(i);
+        Question *question = find_question(question_id,questions);
+        strcat(response.message,question->getQuestion());
+        strcat(response.message," ");
+        strcat(response.message,question->getAnswers()[0]);
+        strcat(response.message," ");
+        strcat(response.message,question->getAnswers()[1]);
+        strcat(response.message," ");
+        strcat(response.message,question->getAnswers()[2]);
+        strcat(response.message," ");
+        strcat(response.message,question->getAnswers()[3]);
+        strcat(response.message," ");
+        char choice[5];
+        sprintf(choice,"%d",game->getChoice(request->client_id,i));
+        strcat(response.message,choice);
+        strcat(response.message," ");
+    }
+    response.status = SUCCESS;
+
     return response;
 }
 
@@ -357,5 +401,28 @@ struct Response getReadyRoom(struct Request *request)
         }
     }
     cout << "List room ready : " << response.message << endl;
+    return response;
+}
+
+struct Response getHistory(struct Request *request)
+{
+    struct Response response;
+    response.status = SUCCESS;
+    response.type = RESPONSE_GET_HISTORY;
+    strcpy(response.message,"");
+    for(Game *game : games)
+    {
+        for(int member_id : game->getMembers())
+        {
+            if(member_id == request->client_id)
+            {
+                char game_id[5];
+                sprintf(game_id,"%d",game->getId()); 
+                strcat(response.message,game_id);
+                strcat(response.message," ");
+                break;
+            }
+        }
+    }
     return response;
 }

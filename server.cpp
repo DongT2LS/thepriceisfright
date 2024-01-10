@@ -85,6 +85,9 @@ void handle_request(struct Request *request)
     case GET_READY_ROOM:
         response = getReadyRoom(request);
         break;
+    case GET_HISTORY:
+        response = getHistory(request);
+        break;
     default:
         printf("Not found ! \n");
         break;
