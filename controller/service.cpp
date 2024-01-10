@@ -157,7 +157,7 @@ void *handle_question(void *id)
     User *user = find_user(client_id, users);
     Game *game = find_game(user->game_id, games);
 
-    // Sau 2s sẽ bắt đầu gửi câu hỏi 
+    // Sau 2s sẽ bắt đầu gửi câu hỏi
     sleep(2);
     for (int question_id : game->getQuestions())
     {
@@ -184,17 +184,36 @@ void *handle_question(void *id)
         game->turn++;
         cout << "Turn : " << game->turn << endl;
 
-        // 5s sẽ gửi 1 câu hỏi mới và tăng turn lên 
+        // 5s sẽ gửi 1 câu hỏi mới và tăng turn lên
         sleep(5);
     }
-
-    for (int user_id : game->getMembers())
+    int max_score = 0;
+    for (int i = 0; i < game->getMembers().size(); i++)
     {
+        if (game->getScore(i) > max_score)
+        {
+            max_score = game->getScore(i);
+        }
+    }
+    for (int i = 0; i < game->getMembers().size(); i++)
+    {
+        int user_id = game->getMembers()[i];
         User *member = find_user(user_id, users);
+        game->status = GAME_END;
+        game->store();
+
+        member->status = USER_ONLINE;
         struct Response sendEndGame;
         sendEndGame.status = SUCCESS;
-        sendEndGame.type = RESPONSE_SEND_QUESTION;
-        strcpy(sendEndGame.message, "End");
+        sendEndGame.type = RESPONSE_END;
+        if (game->getScore(i) == max_score)
+        {
+            strcpy(sendEndGame.message, "Winner \n");
+        }
+        else
+        {
+            strcpy(sendEndGame.message, "Loser \n");
+        }
         send(member->getClientSocket(), &sendEndGame, sizeof(struct Response), 0);
     }
 
