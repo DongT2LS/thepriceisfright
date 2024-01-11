@@ -341,19 +341,19 @@ struct Response replay(struct Request *request)
         int question_id = game->getQuestion(i);
         Question *question = find_question(question_id,questions);
         strcat(response.message,question->getQuestion());
-        strcat(response.message," ");
+        strcat(response.message,"\n");
         strcat(response.message,question->getAnswers()[0]);
-        strcat(response.message," ");
+        strcat(response.message,"\n");
         strcat(response.message,question->getAnswers()[1]);
-        strcat(response.message," ");
+        strcat(response.message,"\n");
         strcat(response.message,question->getAnswers()[2]);
-        strcat(response.message," ");
+        strcat(response.message,"\n");
         strcat(response.message,question->getAnswers()[3]);
-        strcat(response.message," ");
+        strcat(response.message,"\n");
         char choice[5];
         sprintf(choice,"%d",game->getChoice(request->client_id,i));
         strcat(response.message,choice);
-        strcat(response.message," ");
+        strcat(response.message,"\n");
     }
     response.status = SUCCESS;
 
