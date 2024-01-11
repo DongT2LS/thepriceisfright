@@ -256,8 +256,20 @@ struct Response start(struct Request *request)
             }
         }
     }
-    game->addQuestions(1);
-    game->addQuestions(2);
+    int size = questions.size();
+    std::vector<bool> chosen(size, false);
+    int arr[3];
+    for (int i = 0; i < 3; i++)
+    {
+        int randomIndex;
+        do {
+            randomIndex = std::rand() % size + 1;
+            arr[i] = randomIndex;
+        } while (chosen[randomIndex]);
+    }
+    game->addQuestions(arr[0]);
+    game->addQuestions(arr[1]);
+    game->addQuestions(arr[2]);
     game->status = GAME_INPROGRESS;
     response.status = SUCCESS;
     strcpy(response.message, "You started game !");

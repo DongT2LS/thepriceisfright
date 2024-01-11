@@ -223,8 +223,10 @@ void *handle_question(void *id)
 
 void detachGame(int client_id, pthread_t thread_id)
 {
+    int client_id_local = client_id;
+    cout << "Detach game : " << client_id << endl;
     // Tạo luồng mới
-    if (pthread_create(&thread_id, NULL, handle_question, &client_id) < 0)
+    if (pthread_create(&thread_id, NULL, handle_question, &client_id_local) < 0)
     {
         perror("Could not create thread");
         return;
