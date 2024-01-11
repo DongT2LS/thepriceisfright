@@ -66,6 +66,7 @@ struct Response join(struct Request *request)
 struct Response newroom(struct Request *request)
 {
     create_game(request->client_id);
+    update_list_ready_room();
     cout << "NEW ROOM " << request->client_id << endl;
     struct Response response;
     response.status = SUCCESS;

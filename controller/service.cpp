@@ -284,9 +284,10 @@ void update_list_ready_room()
     struct Response response;
     response.status = SUCCESS;
     response.type = RESPONSE_READY_ROOM;
+    strcpy(response.message,"");
     for (Game *game : games)
     {
-        if (game->status = GAME_READY)
+        if (game->status == GAME_READY)
         {
             char game_id[5];
             sprintf(game_id, "%d", game->getId());
