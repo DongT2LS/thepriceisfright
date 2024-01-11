@@ -66,6 +66,8 @@ struct Response login(struct Request *request)
                     char id_string[5];
                     sprintf(id_string, "%d", user->getId());
                     strcpy(response.message, id_string);
+                    strcat(response.message," ");
+                    strcat(response.message,user->getUsername());
                     cout << response.message << endl;
                     response.status = SUCCESS;
                     return response;
