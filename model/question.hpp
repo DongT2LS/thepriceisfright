@@ -2,8 +2,9 @@
 #include <iostream>
 #include <cstring>
 #include "../config/config.hpp"
+#include <semaphore.h>
 using namespace std;
-
+extern sem_t question_semaphore;
 class Question
 {
 private:
@@ -32,6 +33,7 @@ public:
 
     void store()
     {
+        sem_wait(&question_semaphore);
         FILE *file = fopen(QUESTION_DATABASE, "a");
         if (file == NULL)
         {
@@ -40,6 +42,7 @@ public:
         }
         fprintf(file, "%d %d %s %s %s %s %s\n", id, true_answer, question, answers[0], answers[1], answers[2], answers[3]);
         fclose(file);
+        sem_post(&question_semaphore);
     }
 
     char *getQuestion()

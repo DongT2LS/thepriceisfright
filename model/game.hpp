@@ -7,7 +7,10 @@
 #include <vector>
 #include "user.hpp"
 #include "question.hpp"
+#include <semaphore.h>
 using namespace std;
+
+extern sem_t game_semaphore;
 
 enum GameStatus
 {
@@ -178,13 +181,9 @@ public:
         }
     }
 
-    // int getWinner()
-    // {
-
-    // }
-
     void store()
     {
+        sem_wait(&game_semaphore);
         FILE *file = fopen(GAME_DATABASE, "a");
         if (file == NULL)
         {
@@ -212,6 +211,7 @@ public:
             fprintf(file, "\n");
         }
         fclose(file);
+        sem_post(&game_semaphore);
     }
 };
 

@@ -1,9 +1,12 @@
 #ifndef CHAT_HPP
 #define CHAT_HPP
 
+#include <semaphore.h>
 #include<bits/stdc++.h>
 #include "../config/config.hpp"
 using namespace std;
+
+extern sem_t chat_semaphore;
 
 class Chat
 {
@@ -41,6 +44,7 @@ public:
 
     void store()
     {
+        sem_wait(&chat_semaphore);
         FILE *file = fopen(CHAT_DATABASE, "a");
         if (file == NULL)
         {
@@ -49,9 +53,8 @@ public:
         }
         fprintf(file, "%d %d %s\n", user_id,game_id,chat);
         fclose(file);
+        sem_post(&chat_semaphore);
     }
-    
-    
 };
 
 

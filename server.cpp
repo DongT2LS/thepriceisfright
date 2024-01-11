@@ -17,6 +17,11 @@
 
 using namespace std;
 
+sem_t user_semaphore;
+sem_t chat_semaphore;
+sem_t question_semaphore;
+sem_t game_semaphore;
+
 void log_info(struct Request *request)
 {
     FILE *file = fopen(LOG_DATABASE, "a");
@@ -149,6 +154,11 @@ void *handle_client(void *socket_fd)
 
 int main(int argc, char *argv[])
 {
+    sem_init(&user_semaphore, 0, 1);
+    sem_init(&game_semaphore, 0, 1);
+    sem_init(&chat_semaphore, 0, 1);
+    sem_init(&question_semaphore, 0, 1);
+
     // User::getListUser();
     getUserDatabase();
     getChatDatabase();
@@ -207,7 +217,10 @@ int main(int argc, char *argv[])
         // Tách luồng để xử lý riêng biệt
         pthread_detach(thread_id);
     }
-
+    sem_destroy(&user_semaphore);
+    sem_destroy(&game_semaphore);
+    sem_destroy(&chat_semaphore);
+    sem_destroy(&question_semaphore);
     close(server_socket);
 
     return 0;
