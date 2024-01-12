@@ -13,6 +13,7 @@ struct Response signup(struct Request *request)
 {
     struct Response response;
     response.type = RESPONSE_SIGNUP;
+    
     char *username, *password;
     username = strtok(request->message, " ");
     password = strtok(NULL, "\0");
@@ -22,12 +23,14 @@ struct Response signup(struct Request *request)
         {
             printf("Username invalid");
             strcpy(response.message, "Username invalid");
+            response.status = ERROR;
             return response;
         }
     }
     int id = users.size() + 1;
     User::store(id, username, password);
     users.push_back(new User(id, username, password));
+    response.status = SUCCESS;
     strcpy(response.message, "Username valid");
     return response;
 }
