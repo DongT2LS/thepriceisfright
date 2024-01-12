@@ -236,7 +236,7 @@ struct Response start(struct Request *request)
         for (int member_id : game->getMembers())
         {
             User *user = find_user(member_id, users);
-            if (user->status != USER_PLAYING)
+            if (user->status != USER_PLAYING && user->status == USER_READY)
             {
                 response.status = ERROR;
                 strcpy(response.message, "Players not ready");

@@ -259,7 +259,6 @@ void *handle_question(void *id)
         int user_id = game->getMembers()[i];
         User *member = find_user(user_id, users);
         game->status = GAME_END;
-        game->store();
 
         member->status = USER_ONLINE;
         struct Response sendEndGame;
@@ -275,6 +274,7 @@ void *handle_question(void *id)
         }
         send(member->getClientSocket(), &sendEndGame, sizeof(struct Response), 0);
     }
+    game->store();
     sleep(0.5);
     update_list_ready_room();
     pthread_exit(0);
