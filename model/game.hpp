@@ -41,7 +41,7 @@ public:
         for (int i = 0; i < 20; ++i)
         {
             choices[i] = vector<int>(20, 0);
-            cout <<"Choice" << i << " : " <<choices[i][0] << endl;
+            // cout <<"Choice" << i << " : " <<choices[i][0] << endl;
         }
     }
 
@@ -127,12 +127,26 @@ public:
             if (members[i] == user_id)
             {
                 choices[i][turn-1] = choice;
-                cout << user_id << " choose " << choice << endl;
                 break;
             }
         }
     }
-
+    
+    void setChoices(int user_id,vector<int> user_choices)
+    {
+        for (int i = 0; i < members.size(); i++)
+        {
+            if (members[i] == user_id)
+            {
+                choices[i] = user_choices;
+                for(int choice : choices[i])
+                {
+                    cout << choice << " ";
+                }
+                cout << endl;
+            }
+        }
+    }
     // Thêm hàm getChoice vào lớp Game
     int getChoice(int user_id, int index)
     {

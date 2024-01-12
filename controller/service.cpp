@@ -65,6 +65,27 @@ void create_game(int owner_id)
     games.push_back(new Game(game_id, owner_id));
 }
 
+vector<int> extractNumbers(const char *input)
+{
+    vector<int> numbers;
+    istringstream iss(input);
+
+    int num;
+    while (iss >> num)
+    {
+        numbers.push_back(num);
+
+        // Check for trailing non-digit characters
+        if (iss.fail())
+        {
+            iss.clear();
+            iss.ignore();
+        }
+    }
+
+    return numbers;
+}
+
 void getGameDatabase()
 {
     FILE *file = fopen(GAME_DATABASE, "r");
@@ -74,11 +95,48 @@ void getGameDatabase()
         printf("Can't open file : %s\n", GAME_DATABASE);
         return;
     }
-
-    Game *game = new Game();
-    while (feof(file))
+    int id;
+    while (fscanf(file, "%d", &id) != EOF)
     {
-        /* code */
+        fscanf(file, "\n");
+        char line[256]; // Độ dài tối đa của mỗi dòng, có thể điều chỉnh tùy ý
+        vector<int> members;
+        if (fgets(line, sizeof(line), file) != NULL)
+        {
+            printf("%s", line);
+        }
+        members = extractNumbers(line);
+        Game *game = new Game(id, members[0]);
+        for (int member_id : members)
+        {
+            if (member_id != members[0])
+            {
+                game->addMembers(member_id);
+            }
+        }
+        vector<int> listQuestion;
+        if (fgets(line, sizeof(line), file) != NULL)
+        {
+            printf("%s", line);
+        }
+        listQuestion = extractNumbers(line);
+        for (int question_id : listQuestion)
+        {
+            cout << "Q : " << question_id << endl;
+            game->addQuestions(question_id);
+        }
+        int user_length = members.size();
+        for (int i = 0; i < user_length; i++)
+        {
+            vector<int> user_choice;
+            int user_id;
+            fscanf(file, "%d", &user_id);
+            cout << "User id : " << user_id << endl;
+            fgets(line, sizeof(line), file);
+            user_choice = extractNumbers(line);
+            game->setChoices(user_id, user_choice);
+        }
+        games.push_back(game);
     }
 
     fclose(file);
@@ -286,7 +344,7 @@ void update_list_ready_room()
     struct Response response;
     response.status = SUCCESS;
     response.type = RESPONSE_READY_ROOM;
-    strcpy(response.message,"");
+    strcpy(response.message, "");
     for (Game *game : games)
     {
         if (game->status == GAME_READY)
