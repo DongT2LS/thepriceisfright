@@ -136,6 +136,7 @@ void getGameDatabase()
             user_choice = extractNumbers(line);
             game->setChoices(user_id, user_choice);
         }
+        game->status = GAME_END;
         games.push_back(game);
     }
 
